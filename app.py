@@ -43,8 +43,8 @@ def tokenize(df, columns):
             df['tokenized_' + str(c)][i] = tokenized_dataset[0]
     return df
 
-dmd_url = 'https://github.com/salehipak/military/blob/2d34cbec6ad632525a8412da9f436cd27c03395c/tokenized_dmd_df.csv'
-prd_url = 'https://github.com/salehipak/military/blob/2d34cbec6ad632525a8412da9f436cd27c03395c/tokenized_prd_df.csv'
+dmd_url = 'https://raw.githubusercontent.com/salehipak/military/main/tokenized_dmd_df.csv'
+prd_url = 'https://raw.githubusercontent.com/salehipak/military/main/tokenized_prd_df.csv'
 # -------------------------------------------------------------------------------
 # title and subtitle
 st.title('Technomart Matching Demo')
