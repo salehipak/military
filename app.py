@@ -1,7 +1,4 @@
 # Import packages
-from collections import Counter
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
 import streamlit as st
 from streamlit_tags import st_tags
 import pandas as pd
@@ -12,6 +9,9 @@ import re
 import codecs
 from hazm import Normalizer
 import ast
+from collections import Counter
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 # -------------------------------------------------------------------------------
 nmz = Normalizer()
 nltk.download("punkt")
