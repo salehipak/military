@@ -17,8 +17,6 @@ nmz = Normalizer()
 nltk.download("punkt")
 nltk.download("stopwords")
 en_stops = set(stopwords.words("english"))
-dmd_df = pd.read_csv('dmd_df.csv')
-prd_df = pd.read_csv('prd_df.csv')
 # Import persian stops
 fa_stops = sorted(list(set([nmz.normalize(w) for w in codecs.open(
     'persian.txt', encoding='utf-8').read().split('\n') if w])))
