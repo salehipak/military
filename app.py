@@ -45,7 +45,8 @@ def tokenize(df, columns):
             df['tokenized_' + str(c)][i] = tokenized_dataset[0]
     return df
 
-
+dmd_url = 'https://github.com/salehipak/military/blob/2d34cbec6ad632525a8412da9f436cd27c03395c/tokenized_dmd_df.csv'
+prd_url = 'https://github.com/salehipak/military/blob/2d34cbec6ad632525a8412da9f436cd27c03395c/tokenized_prd_df.csv'
 # -------------------------------------------------------------------------------
 # title and subtitle
 st.title('Technomart Matching Demo')
@@ -103,7 +104,7 @@ st.text("")
 #                                })
 #         tokenized_prd_df = tokenize(
 #             prd_df, ['prd_title', 'prd_description', 'prd_key_words'])
-#         tokenized_dmd_df = pd.read_csv('tokenized_dmd_df.csv', converters={'tokenized_dmd_title': ast.literal_eval, 'tokenized_dmd_description': ast.literal_eval, 'tokenized_dmd_key_words': ast.literal_eval}
+#         tokenized_dmd_df = pd.read_csv(dmd_url, converters={'tokenized_dmd_title': ast.literal_eval, 'tokenized_dmd_description': ast.literal_eval, 'tokenized_dmd_key_words': ast.literal_eval}
 #                                        )
 
 #         most_similar_dmd_for_prd_df = pd.DataFrame(
@@ -171,7 +172,7 @@ st.text("")
 #                                })
 #         tokenized_dmd_df = tokenize(
 #             dmd_df, ['dmd_title', 'dmd_description', 'dmd_key_words'])
-#         tokenized_prd_df = pd.read_csv('tokenized_prd_df.csv', converters={'tokenized_prd_title': ast.literal_eval, 'tokenized_prd_description': ast.literal_eval, 'tokenized_prd_key_words': ast.literal_eval}
+#         tokenized_prd_df = pd.read_csv(prd_url, converters={'tokenized_prd_title': ast.literal_eval, 'tokenized_prd_description': ast.literal_eval, 'tokenized_prd_key_words': ast.literal_eval}
 #                                        )
 
 #         most_similar_prd_for_dmd_df = pd.DataFrame(
