@@ -157,10 +157,11 @@ if button_id:
 
         df = pd.DataFrame(most_similar_dmd_for_prd_df['total'].tolist()[0].items(), columns=[
                           'ID', 'Values']).sort_values('Values', ascending=False).reset_index(drop=True).iloc[:item_number, :]
+        df.Values = df.Values.round(2)
         df.index += 1
         df = pd.merge(df, tokenized_dmd_df[['dmd_urlIdentifier', 'dmd_title',
                                             'dmd_key_words']], left_on='ID', right_on='dmd_urlIdentifier').drop('dmd_urlIdentifier', axis=1).rename(columns={'dmd_title': 'Title', 'dmd_key_words': 'keywords'})
-        df['Links'] = df['ID'].apply(
+        df['Link'] = df['ID'].apply(
             lambda r: f'<a href="https://techmart.ir/demand/view/{r}">Link</a>')
 
     # ----------------------------------------------------------------------------------
@@ -224,10 +225,11 @@ if button_id:
             ), axis=1)
         df = pd.DataFrame(most_similar_prd_for_dmd_df['total'].tolist()[0].items(), columns=[
                           'ID', 'Values']).sort_values('Values', ascending=False).reset_index(drop=True).iloc[:item_number, :]
+        df.Values = df.Values.round(2)
         df.index += 1
         df = pd.merge(df, tokenized_prd_df[['prd_urlIdentifier', 'prd_title',
                                             'prd_key_words']], left_on='ID', right_on='prd_urlIdentifier').drop('prd_urlIdentifier', axis=1).rename(columns={'prd_title': 'Title', 'prd_key_words': 'keywords'})
-        df['Links'] = df['ID'].apply(
+        df['Link'] = df['ID'].apply(
             lambda r: f'<a href="https://techmart.ir/product/view/{r}">Link</a>')
     # ------------------------------------------------------------------------------------------
     # Apply the styling function to the 'Values' column
