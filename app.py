@@ -171,7 +171,7 @@ if button_id:
             corpus = [dictionary.doc2bow(doc) for doc in tokenized_documents]
             # Train the LDA model
             lda_model = models.LdaModel(
-                corpus, num_topics=8, id2word=dictionary, passes=15)
+                corpus, num_topics=5, id2word=dictionary, passes=10)
 
             # Infer topic proportions for each document
             topic_proportions = [lda_model[doc] for doc in corpus]
@@ -270,7 +270,7 @@ if button_id:
             corpus = [dictionary.doc2bow(doc) for doc in tokenized_documents]
             # Train the LDA model
             lda_model = models.LdaModel(
-                corpus, num_topics=8, id2word=dictionary, passes=15)
+                corpus, num_topics=5, id2word=dictionary, passes=10)
 
             # Infer topic proportions for each document
             topic_proportions = [lda_model[doc] for doc in corpus]
