@@ -50,7 +50,7 @@ prd_url = 'https://raw.githubusercontent.com/salehipak/military/main/tokenized_p
 # -------------------------------------------------------------------------------
 # title and subtitle
 st.title('Technomart Matching Demo')
-st.text('Maching demand and supply of Iran National Technomart')
+st.text('Matching demand and supply of Iran National Technomart')
 # Demmender or supplier
 input_type = st.radio(
     "Are you supplier or demmender?",
