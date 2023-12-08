@@ -12,6 +12,8 @@ import ast
 from collections import Counter
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+from gensim import corpora, models
+from gensim.models.coherencemodel import CoherenceModel
 # -------------------------------------------------------------------------------
 nmz = Normalizer()
 nltk.download("punkt")
@@ -73,7 +75,7 @@ user_input_keywords = st_tags(
 col1, col2, col3 = st.columns(3)
 with col1:
     algo = st.selectbox('Algorithm',
-                        ('Cosine Similarity', 'Jaccard Similarity', 'LDA', 'Word2Vec'))
+                        ('Cosine Similarity', 'Jaccard Similarity', 'Cosine + LDA', 'Jaccard + LDA'))
 
 with col2:
     item_number = st.selectbox('Number',
@@ -123,13 +125,13 @@ if button_id:
             tfidf_matrix = tfidf_vectorizer.fit_transform(all_token)
 
             # Calculate similarity between dmd and prd
-            if algo == 'Cosine Similarity':
+            if algo in ['Cosine Similarity', 'Cosine + LDA']:
                 similarity_matrix = cosine_similarity(
                     tfidf_matrix[:len(dmd_token)], tfidf_matrix[len(dmd_token):])
                 d = {'title': 0.2, 'description': 0.35, 'key_words': 0.4}
                 matching_results = pd.DataFrame(
                     similarity_matrix * d[c], index=tokenized_dmd_df['dmd_urlIdentifier'], columns=tokenized_prd_df['prd_urlIdentifier'])
-            elif algo == 'Jaccard Similarity':
+            elif algo in ['Jaccard Similarity', 'Jaccard + LDA']:
                 similarity_matrix = tfidf_matrix[:len(dmd_token)].dot(
                     tfidf_matrix[len(dmd_token):].T)
                 d = {'title': 0.6, 'description': 0.4, 'key_words': 0.4}
@@ -161,6 +163,37 @@ if button_id:
         df.index += 1
         df = pd.merge(df, tokenized_dmd_df[['dmd_urlIdentifier', 'dmd_title',
                                             'dmd_key_words']], left_on='ID', right_on='dmd_urlIdentifier').drop('dmd_urlIdentifier', axis=1).rename(columns={'dmd_title': 'Title', 'dmd_key_words': 'keywords'})
+        if algo in ['Cosine + LDA', 'Jaccard + LDA']:
+            tokenized_documents = tokenized_dmd_df['tokenized_dmd_description'].tolist(
+            ) + tokenized_prd_df['tokenized_prd_description'].tolist()
+            dictionary = corpora.Dictionary(tokenized_documents)
+
+            corpus = [dictionary.doc2bow(doc) for doc in tokenized_documents]
+            # Train the LDA model
+            lda_model = models.LdaModel(
+                corpus, num_topics=8, id2word=dictionary, passes=15)
+
+            # Infer topic proportions for each document
+            topic_proportions = [lda_model[doc] for doc in corpus]
+
+            # Automatically generate topic labels based on top words
+            topic_labels = {}
+            for topic_id in range(lda_model.num_topics):
+                topic_words = [word for word,
+                               prob in lda_model.show_topic(topic_id)]
+                topic_labels[topic_id] = ', '.join(topic_words)
+
+            # Label documents with topics
+            document_labels = [max(topic_dist, key=lambda x: x[1])[0]
+                               for topic_dist in topic_proportions]
+
+            # Assign automatically generated topic labels to the documents
+            labeled_documents = [topic_labels[label]
+                                 for label in document_labels]
+            tokenized_dmd_df['lda_dmd_description'] = labeled_documents[:len(
+                tokenized_dmd_df)]
+            df = df[df['ID'].isin(tokenized_dmd_df['dmd_urlIdentifier']
+                                  [tokenized_dmd_df['lda_dmd_description'] == labeled_documents[:-1]])]
         df['Link'] = df['ID'].apply(
             lambda r: f'<a href="https://techmart.ir/demand/view/{r}">Link</a>')
 
@@ -192,13 +225,13 @@ if button_id:
             tfidf_matrix = tfidf_vectorizer.fit_transform(all_token)
 
             # Calculate similarity between prd and dmd
-            if algo == 'Cosine Similarity':
+            if algo in ['Cosine Similarity', 'Cosine + LDA']:
                 similarity_matrix = cosine_similarity(
                     tfidf_matrix[:len(prd_token)], tfidf_matrix[len(prd_token):])
                 d = {'title': 0.2, 'description': 0.35, 'key_words': 0.4}
                 matching_results = pd.DataFrame(
                     similarity_matrix * d[c], index=tokenized_prd_df['prd_urlIdentifier'], columns=tokenized_dmd_df['dmd_urlIdentifier'])
-            elif algo == 'Jaccard Similarity':
+            elif algo in ['Jaccard Similarity', 'Jaccard + LDA']:
                 similarity_matrix = tfidf_matrix[:len(prd_token)].dot(
                     tfidf_matrix[len(prd_token):].T)
                 d = {'title': 0.6, 'description': 0.4, 'key_words': 0.4}
@@ -229,6 +262,39 @@ if button_id:
         df.index += 1
         df = pd.merge(df, tokenized_prd_df[['prd_urlIdentifier', 'prd_title',
                                             'prd_key_words']], left_on='ID', right_on='prd_urlIdentifier').drop('prd_urlIdentifier', axis=1).rename(columns={'prd_title': 'Title', 'prd_key_words': 'keywords'})
+        if algo in ['Cosine + LDA', 'Jaccard + LDA']:
+            tokenized_documents = tokenized_dmd_df['tokenized_prd_description'].tolist(
+            ) + tokenized_prd_df['tokenized_dmd_description'].tolist()
+            dictionary = corpora.Dictionary(tokenized_documents)
+
+            corpus = [dictionary.doc2bow(doc) for doc in tokenized_documents]
+            # Train the LDA model
+            lda_model = models.LdaModel(
+                corpus, num_topics=8, id2word=dictionary, passes=15)
+
+            # Infer topic proportions for each document
+            topic_proportions = [lda_model[doc] for doc in corpus]
+
+            # Automatically generate topic labels based on top words
+            topic_labels = {}
+            for topic_id in range(lda_model.num_topics):
+                topic_words = [word for word,
+                               prob in lda_model.show_topic(topic_id)]
+                topic_labels[topic_id] = ', '.join(topic_words)
+
+            # Label documents with topics
+            document_labels = [max(topic_dist, key=lambda x: x[1])[0]
+                               for topic_dist in topic_proportions]
+
+            # Assign automatically generated topic labels to the documents
+            labeled_documents = [topic_labels[label]
+                                 for label in document_labels]
+            tokenized_dmd_df['lda_prd_description'] = labeled_documents[:len(
+                tokenized_prd_df)]
+
+            df = df[df['ID'].isin(tokenized_dmd_df['prd_urlIdentifier']
+                                  [tokenized_dmd_df['lda_prd_description'] == labeled_documents[:-1]])]
+        
         df['Link'] = df['ID'].apply(
             lambda r: f'<a href="https://techmart.ir/product/view/{r}">Link</a>')
     # ------------------------------------------------------------------------------------------
