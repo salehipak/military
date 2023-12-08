@@ -193,7 +193,7 @@ if button_id:
             tokenized_dmd_df['lda_dmd_description'] = labeled_documents[:len(
                 tokenized_dmd_df)]
             df = df[df['ID'].isin(tokenized_dmd_df['dmd_urlIdentifier']
-                                  [tokenized_dmd_df['lda_dmd_description'] == labeled_documents[:-1]])]
+                                  [tokenized_dmd_df['lda_dmd_description'] == labeled_documents[:-1]]).iloc[:2,:]]
         df['Link'] = df['ID'].apply(
             lambda r: f'<a href="https://techmart.ir/demand/view/{r}">Link</a>')
 
@@ -293,7 +293,7 @@ if button_id:
                 tokenized_prd_df)]
 
             df = df[df['ID'].isin(tokenized_dmd_df['prd_urlIdentifier']
-                                  [tokenized_dmd_df['lda_prd_description'] == labeled_documents[:-1]])]
+                                  [tokenized_dmd_df['lda_prd_description'] == labeled_documents[:-1]].iloc[:2,:])]
         
         df['Link'] = df['ID'].apply(
             lambda r: f'<a href="https://techmart.ir/product/view/{r}">Link</a>')
