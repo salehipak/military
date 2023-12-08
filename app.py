@@ -143,7 +143,7 @@ if button_id:
             for prd in prd_df['prd_urlIdentifier']:
                 sorted_dmd = matching_results[prd].sort_values(ascending=False)
                 # Exclude the prd herself
-                most_similar_dmd = dict(sorted_dmd[:15])
+                most_similar_dmd = dict(sorted_dmd[:30])
                 most_similar_dmd_for_prd[prd] = most_similar_dmd
 
             # Create DataFrames to display the results
@@ -193,7 +193,7 @@ if button_id:
             tokenized_dmd_df['lda_dmd_description'] = labeled_documents[:len(
                 tokenized_dmd_df)]
             df = df[df['ID'].isin(tokenized_dmd_df['dmd_urlIdentifier']
-                                  [tokenized_dmd_df['lda_dmd_description'] == labeled_documents[-1]])]
+                                  [tokenized_dmd_df['lda_dmd_description'] == labeled_documents[-1]])].reset_index()
         df['Link'] = df['ID'].apply(
             lambda r: f'<a href="https://techmart.ir/demand/view/{r}">Link</a>')
 
@@ -243,7 +243,7 @@ if button_id:
             for dmd in dmd_df['dmd_urlIdentifier']:
                 sorted_prd = matching_results[dmd].sort_values(ascending=False)
                 # Exclude the dmd herself
-                most_similar_prd = dict(sorted_prd[:15])
+                most_similar_prd = dict(sorted_prd[:30])
                 most_similar_prd_for_dmd[dmd] = most_similar_prd
 
             # Create DataFrames to display the results
@@ -293,7 +293,7 @@ if button_id:
                 tokenized_prd_df)]
 
             df = df[df['ID'].isin(tokenized_dmd_df['prd_urlIdentifier']
-                                  [tokenized_dmd_df['lda_prd_description'] == labeled_documents[-1]])]
+                                  [tokenized_dmd_df['lda_prd_description'] == labeled_documents[-1]])].reset_index()
         
         df['Link'] = df['ID'].apply(
             lambda r: f'<a href="https://techmart.ir/product/view/{r}">Link</a>')
