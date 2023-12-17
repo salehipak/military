@@ -263,7 +263,7 @@ if button_id:
                                             'prd_key_words']], left_on='ID', right_on='prd_urlIdentifier').drop('prd_urlIdentifier', axis=1).rename(columns={'prd_title': 'Title', 'prd_key_words': 'keywords'})
         if algo in ['Cosine + LDA', 'Jaccard + LDA']:
             tokenized_documents = tokenized_prd_df['tokenized_prd_description'].tolist(
-            ) + tokenized_prd_df['tokenized_prd_description'].tolist()
+            ) + tokenized_dmd_df['tokenized_dmd_description'].tolist()
             dictionary = corpora.Dictionary(tokenized_documents)
 
             corpus = [dictionary.doc2bow(doc) for doc in tokenized_documents]
@@ -288,11 +288,11 @@ if button_id:
             # Assign automatically generated topic labels to the documents
             labeled_documents = [topic_labels[label]
                                  for label in document_labels]
-            tokenized_dmd_df['lda_prd_description'] = labeled_documents[:len(
+            tokenized_prd_df['lda_prd_description'] = labeled_documents[:len(
                 tokenized_prd_df)]
 
-            df = df[df['ID'].isin(tokenized_dmd_df['prd_urlIdentifier']
-                                  [tokenized_dmd_df['lda_prd_description'] == labeled_documents[-1]])].reset_index()
+            df = df[df['ID'].isin(tokenized_prd_df['prd_urlIdentifier']
+                                  [tokenized_prd_df['lda_prd_description'] == labeled_documents[-1]])].reset_index()
         
         df['Link'] = df['ID'].apply(
             lambda r: f'<a href="https://techmart.ir/product/view/{r}">Link</a>')
