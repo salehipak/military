@@ -263,7 +263,7 @@ if button_id:
                                             'prd_key_words']], left_on='ID', right_on='prd_urlIdentifier').drop('prd_urlIdentifier', axis=1).rename(columns={'prd_title': 'Title', 'prd_key_words': 'keywords'})
         if algo in ['Cosine + LDA', 'Jaccard + LDA']:
             tokenized_documents = tokenized_prd_df['tokenized_prd_description'].tolist(
-            ) + tokenized_prd_df['tokenized_dmd_description'].tolist()
+            ) + tokenized_prd_df['tokenized_prd_description'].tolist()
             dictionary = corpora.Dictionary(tokenized_documents)
 
             corpus = [dictionary.doc2bow(doc) for doc in tokenized_documents]
