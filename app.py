@@ -70,7 +70,6 @@ user_input_keywords = st_tags(
     key="tag_input",
 )
 # --------------------------------------------------------------------------------
-
 # Choose Algorithm, Number and Sort Type
 col1, col2, col3 = st.columns(3)
 with col1:
@@ -263,7 +262,7 @@ if button_id:
         df = pd.merge(df, tokenized_prd_df[['prd_urlIdentifier', 'prd_title',
                                             'prd_key_words']], left_on='ID', right_on='prd_urlIdentifier').drop('prd_urlIdentifier', axis=1).rename(columns={'prd_title': 'Title', 'prd_key_words': 'keywords'})
         if algo in ['Cosine + LDA', 'Jaccard + LDA']:
-            tokenized_documents = tokenized_dmd_df['tokenized_prd_description'].tolist(
+            tokenized_documents = tokenized_prd_df['tokenized_prd_description'].tolist(
             ) + tokenized_prd_df['tokenized_dmd_description'].tolist()
             dictionary = corpora.Dictionary(tokenized_documents)
 
