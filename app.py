@@ -142,7 +142,7 @@ if button_id:
             for prd in prd_df['prd_urlIdentifier']:
                 sorted_dmd = matching_results[prd].sort_values(ascending=False)
                 # Exclude the prd herself
-                most_similar_dmd = dict(sorted_dmd[:30])
+                most_similar_dmd = dict(sorted_dmd[:100])
                 most_similar_dmd_for_prd[prd] = most_similar_dmd
 
             # Create DataFrames to display the results
@@ -242,7 +242,7 @@ if button_id:
             for dmd in dmd_df['dmd_urlIdentifier']:
                 sorted_prd = matching_results[dmd].sort_values(ascending=False)
                 # Exclude the dmd herself
-                most_similar_prd = dict(sorted_prd[:30])
+                most_similar_prd = dict(sorted_prd[:100])
                 most_similar_prd_for_dmd[dmd] = most_similar_prd
 
             # Create DataFrames to display the results
