@@ -7,13 +7,13 @@ import nltk
 from nltk.corpus import stopwords
 import re
 import codecs
-from hazm import *
-# import ast
-# from collections import Counter
-# from sklearn.feature_extraction.text import TfidfVectorizer
-# from sklearn.metrics.pairwise import cosine_similarity
-# from gensim import corpora, models
-# from gensim.models.coherencemodel import CoherenceModel
+# from hazm import Normalizer
+import ast
+from collections import Counter
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+from gensim import corpora, models
+from gensim.models.coherencemodel import CoherenceModel
 # # -------------------------------------------------------------------------------
 # nmz = Normalizer()
 # nltk.download("punkt")
