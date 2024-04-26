@@ -48,27 +48,27 @@ from sklearn.metrics.pairwise import cosine_similarity
 # dmd_url = 'https://raw.githubusercontent.com/salehipak/military/main/tokenized_dmd_df.csv'
 # prd_url = 'https://raw.githubusercontent.com/salehipak/military/main/tokenized_prd_df.csv'
 # # -------------------------------------------------------------------------------
-# # title and subtitle
-# st.title('Technomart Matching Demo')
-# st.text('Matching demand and supply of Iran National Technomart')
-# # Demmender or supplier
-# input_type = st.radio(
-#     "Are you supplier or demmender?",
-#     key="visibility",
-#     options=["Supplier", "Demander"]
-# )
-# # Input Title, Description and Keywords
-# user_input_title = st.text_input(
-#     "Enter Title:", placeholder='Text Recommneder System', max_chars=100)
-# user_input_description = st.text_area(
-#     "Enter Description:", placeholder='I nee a text recommneder system', max_chars=2000, height=200)
-# keywords = []
-# user_input_keywords = st_tags(
-#     label="Add keywords:",
-#     text="Press enter to add",
-#     value=keywords,
-#     key="tag_input",
-# )
+# title and subtitle
+st.title('Technomart Matching Demo')
+st.text('Matching demand and supply of Iran National Technomart')
+# Demmender or supplier
+input_type = st.radio(
+    "Are you supplier or demmender?",
+    key="visibility",
+    options=["Supplier", "Demander"]
+)
+# Input Title, Description and Keywords
+user_input_title = st.text_input(
+    "Enter Title:", placeholder='Text Recommneder System', max_chars=100)
+user_input_description = st.text_area(
+    "Enter Description:", placeholder='I nee a text recommneder system', max_chars=2000, height=200)
+keywords = []
+user_input_keywords = st_tags(
+    label="Add keywords:",
+    text="Press enter to add",
+    value=keywords,
+    key="tag_input",
+)
 # # --------------------------------------------------------------------------------
 # # Choose Algorithm, Number and Sort Type
 # col1, col2, col3 = st.columns(3)
