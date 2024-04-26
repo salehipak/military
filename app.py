@@ -7,7 +7,7 @@ import nltk
 from nltk.corpus import stopwords
 import re
 import codecs
-# from hazm import Normalizer
+from hazm import Normalizer
 # import ast
 # from collections import Counter
 # from sklearn.feature_extraction.text import TfidfVectorizer
