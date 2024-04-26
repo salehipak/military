@@ -3,10 +3,10 @@ import streamlit as st
 from streamlit_tags import st_tags
 import pandas as pd
 import numpy as np
-# import nltk
-# from nltk.corpus import stopwords
-# import re
-# import codecs
+import nltk
+from nltk.corpus import stopwords
+import re
+import codecs
 # from hazm import Normalizer
 # import ast
 # from collections import Counter
