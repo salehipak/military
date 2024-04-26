@@ -3,17 +3,17 @@ import streamlit as st
 from streamlit_tags import st_tags
 import pandas as pd
 import numpy as np
-import nltk
-from nltk.corpus import stopwords
-import re
-import codecs
-from hazm import Normalizer
-import ast
-from collections import Counter
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-from gensim import corpora, models
-from gensim.models.coherencemodel import CoherenceModel
+# import nltk
+# from nltk.corpus import stopwords
+# import re
+# import codecs
+# from hazm import Normalizer
+# import ast
+# from collections import Counter
+# from sklearn.feature_extraction.text import TfidfVectorizer
+# from sklearn.metrics.pairwise import cosine_similarity
+# from gensim import corpora, models
+# from gensim.models.coherencemodel import CoherenceModel
 # # -------------------------------------------------------------------------------
 # nmz = Normalizer()
 # nltk.download("punkt")
