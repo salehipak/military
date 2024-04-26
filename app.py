@@ -12,7 +12,7 @@ import ast
 from collections import Counter
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from gensim import corpora, models
+# from gensim import corpora, models
 from gensim.models.coherencemodel import CoherenceModel
 # # -------------------------------------------------------------------------------
 # nmz = Normalizer()
