@@ -17,7 +17,7 @@ from gensim import corpora, models
 from gensim.models.coherencemodel import CoherenceModel
 # -------------------------------------------------------------------------------
 nmz = Normalizer()
-nltk.download("punkt")
+nltk.download("popular")
 nltk.download("stopwords")
 en_stops = set(stopwords.words("english"))
 # Import persian stops
