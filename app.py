@@ -65,9 +65,10 @@ if input_file == 'Yes':
     st.write("Please download sample file below. Your file should have :red[***.xlsx***] format and have the same columns.")
     # Create a sample DataFrame
     data = pd.DataFrame({
-        'title':['دستگاه تولید بویه های صیادی']
+        'id':[1]
+        , 'title':['دستگاه تولید بویه های صیادی']
         ,'description':['بویه های صیادی یکی از ملزومات مهم صنعت صید کشور می باشد که...']
-        ,'keywords':[['ماهیگیری','صیادی']]
+        ,'key_words':[['ماهیگیری','صیادی']]
     })
     output = io.BytesIO()
     writer = pd.ExcelWriter(output, engine="xlsxwriter")
@@ -84,15 +85,19 @@ if input_file == 'Yes':
     upload_dmd = st.file_uploader(":red[***Demand***]")
     if upload_dmd is not None:
         uploaded_dmd_df = pd.read_excel(upload_dmd)
-
-        tokenized_uploaded_dmd_df = tokenize(uploaded_dmd_df, ['title', 'description', 'keywords'])
+        uploaded_dmd_df = pd.read_excel(upload_dmd).sort_values('id')
+        uploaded_dmd_df.insert(loc=2,column='Identifier',value= ['Manual_DMD_' + str(_ + 1) for _ in range(len(uploaded_dmd_df))])
         st.write(uploaded_dmd_df.head(5))
+        tokenized_uploaded_dmd_df = tokenize(uploaded_dmd_df, ['title', 'description', 'key_words'])
+        tokenized_uploaded_dmd_df.to_csv('tokenized_uploaded_dmd_df.csv',index_label=False)
     
     upload_prd = st.file_uploader(":red[***Supply***]")
     if upload_prd is not None:
-        uploaded_prd_df = pd.read_excel(upload_prd)
-        tokenized_uploaded_prd_df = tokenize(uploaded_prd_df, ['title', 'description', 'keywords'])
+        uploaded_prd_df = pd.read_excel(upload_prd).sort_values('id')
+        uploaded_prd_df.insert(loc=2,column='Identifier',value= ['Manual_PRD_' + str(_ + 1) for _ in range(len(uploaded_prd_df))])
         st.write(uploaded_prd_df.head(5))
+        tokenized_uploaded_prd_df = tokenize(uploaded_prd_df, ['title', 'description', 'key_words'])
+        tokenized_uploaded_prd_df.to_csv('tokenized_uploaded_prd_df.csv',index_label=False)
     st.divider()
 
 input_type = st.radio(
@@ -146,9 +151,13 @@ if button_id:
                                })
         tokenized_prd_df = tokenize(
             prd_df, ['prd_title', 'prd_description', 'prd_key_words'])
-        tokenized_dmd_df = pd.read_csv(dmd_url, converters={'tokenized_dmd_title': ast.literal_eval, 'tokenized_dmd_description': ast.literal_eval, 'tokenized_dmd_key_words': ast.literal_eval}
+        tokenized_dmd_df = pd.read_csv('tokenized_dmd_df.csv', converters={'tokenized_dmd_title': ast.literal_eval, 'tokenized_dmd_description': ast.literal_eval, 'tokenized_dmd_key_words': ast.literal_eval}
                                        )
-
+        tokenized_uploaded_dmd_df = pd.read_csv('tokenized_uploaded_dmd_df.csv', converters={'tokenized_title': ast.literal_eval, 'tokenized_description': ast.literal_eval, 'tokenized_key_words': ast.literal_eval}
+                                       )
+        tokenized_uploaded_dmd_df.columns = tokenized_dmd_df.columns
+        tokenized_dmd_df = pd.concat((tokenized_dmd_df,tokenized_uploaded_dmd_df),axis=0)
+        
         most_similar_dmd_for_prd_df = pd.DataFrame(
             {'prd': prd_df['prd_urlIdentifier']})
         for c in ['title', 'description', 'key_words']:
@@ -236,8 +245,8 @@ if button_id:
                 tokenized_dmd_df)]
             df = df[df['ID'].isin(tokenized_dmd_df['dmd_urlIdentifier']
                                   [tokenized_dmd_df['lda_dmd_description'] == labeled_documents[-1]])].reset_index()
-        df['Link'] = df['ID'].apply(
-            lambda r: f'<a href="https://techmart.ir/demand/view/{r}">Link</a>')
+        df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(
+            lambda r: f'<a href="https://techmart.ir/demand/view/{r}">Link</a>'))
 
     # ----------------------------------------------------------------------------------
     # Demander
@@ -246,9 +255,13 @@ if button_id:
                                })
         tokenized_dmd_df = tokenize(
             dmd_df, ['dmd_title', 'dmd_description', 'dmd_key_words'])
-        tokenized_prd_df = pd.read_csv(prd_url, converters={'tokenized_prd_title': ast.literal_eval, 'tokenized_prd_description': ast.literal_eval, 'tokenized_prd_key_words': ast.literal_eval}
+        tokenized_prd_df = pd.read_csv('tokenized_prd_df.csv', converters={'tokenized_prd_title': ast.literal_eval, 'tokenized_prd_description': ast.literal_eval, 'tokenized_prd_key_words': ast.literal_eval}
                                        )
-
+        tokenized_uploaded_prd_df = pd.read_csv('tokenized_uploaded_prd_df.csv', converters={'tokenized_title': ast.literal_eval, 'tokenized_description': ast.literal_eval, 'tokenized_key_words': ast.literal_eval}
+                                       )
+        tokenized_uploaded_prd_df.columns = tokenized_prd_df.columns
+        tokenized_prd_df = pd.concat((tokenized_prd_df,tokenized_uploaded_prd_df),axis=0)
+    
         most_similar_prd_for_dmd_df = pd.DataFrame(
             {'dmd': dmd_df['dmd_urlIdentifier']})
         for c in ['title', 'description', 'key_words']:
@@ -337,8 +350,8 @@ if button_id:
             df = df[df['ID'].isin(tokenized_prd_df['prd_urlIdentifier']
                                   [tokenized_prd_df['lda_prd_description'] == labeled_documents[-1]])].reset_index()
         
-        df['Link'] = df['ID'].apply(
-            lambda r: f'<a href="https://techmart.ir/product/view/{r}">Link</a>')
+        df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(
+            lambda r: f'<a href="https://techmart.ir/product/view/{r}">Link</a>'))
     # ------------------------------------------------------------------------------------------
     # Apply the styling function to the 'Values' column
         # apply gradient styling
