@@ -50,18 +50,59 @@ prd_url = 'https://raw.githubusercontent.com/salehipak/military/main/tokenized_p
 # -------------------------------------------------------------------------------
 # title and subtitle
 st.title('Technomart Matching Demo')
-st.text('Matching demand and supply of Iran National Technomart')
+st.markdown("<p style='font-size:18px;'>Maching demand and supply of Iran National Technomart.</p>", unsafe_allow_html=True)
+# st.text('Maching demand and supply of Iran National Technomart')
+input_file = st.radio(
+    "Do you have your own files?",
+    options=["Yes", "No"]
+    , index=1
+)
+if input_file == 'Yes':
 # Demmender or supplier
+    # st.divider()
+    st.write("Please download sample file below. Your file should have :red[***.xlsx***] format and have the same columns.")
+    # Create a sample DataFrame
+    data = pd.DataFrame({
+        'title':['دستگاه تولید بویه های صیادی']
+        ,'description':['بویه های صیادی یکی از ملزومات مهم صنعت صید کشور می باشد که...']
+        ,'keywords':[['ماهیگیری','صیادی']]
+    })
+    output = io.BytesIO()
+    writer = pd.ExcelWriter(output, engine="xlsxwriter")
+    data.to_excel(writer, index=False, sheet_name="sheet1")
+    writer.close()
+    data_bytes = output.getvalue()
+    st.download_button(label="Download Sample"
+                       ,mime='application/vnd.ms-excel'
+                       , file_name='sample.xlsx'
+                       ,data=data_bytes
+                       )
+    
+    st.write("Now upload your demand and Supply files.") 
+    upload_dmd = st.file_uploader(":red[***Demand***]")
+    if upload_dmd is not None:
+        uploaded_dmd_df = pd.read_excel(upload_dmd)
+
+        tokenized_uploaded_dmd_df = tokenize(uploaded_dmd_df, ['title', 'description', 'keywords'])
+        st.write(uploaded_dmd_df.head(5))
+    
+    upload_prd = st.file_uploader(":red[***Supply***]")
+    if upload_prd is not None:
+        uploaded_prd_df = pd.read_excel(upload_prd)
+        tokenized_uploaded_prd_df = tokenize(uploaded_prd_df, ['title', 'description', 'keywords'])
+        st.write(uploaded_prd_df.head(5))
+    st.divider()
+
 input_type = st.radio(
-    "Are you supplier or demmender?",
+    "Are you supplier or demander?",
     key="visibility",
     options=["Supplier", "Demander"]
 )
 # Input Title, Description and Keywords
 user_input_title = st.text_input(
-    "Enter Title:", placeholder='Text Recommneder System', max_chars=100)
+    "Enter Title:", placeholder='Please enter your title here.', max_chars=100)
 user_input_description = st.text_area(
-    "Enter Description:", placeholder='I nee a text recommneder system', max_chars=2000, height=200)
+    "Enter Description:", placeholder='Please enter your description here.', max_chars=2000, height=200)
 keywords = []
 user_input_keywords = st_tags(
     label="Add keywords:",
