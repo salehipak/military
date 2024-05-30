@@ -1,14 +1,15 @@
 # Import packages
 import streamlit as st
 from streamlit_tags import st_tags
-# import io
+import io
+import xlsxwriter
 import pandas as pd
 import numpy as np
 import nltk
 from nltk.corpus import stopwords
 import re
 import codecs
-from hazm import *
+from hazm import Normalizer
 import ast
 from collections import Counter
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -68,15 +69,15 @@ if input_file == 'Yes':
         ,'description':['بویه های صیادی یکی از ملزومات مهم صنعت صید کشور می باشد که...']
         ,'keywords':[['ماهیگیری','صیادی']]
     })
-    # output = io.BytesIO()
+    output = io.BytesIO()
     writer = pd.ExcelWriter(output, engine="xlsxwriter")
-    # data.to_excel(writer, index=False, sheet_name="sheet1")
+    data.to_excel(writer, index=False, sheet_name="sheet1")
     writer.close()
-    # data_bytes = output.getvalue()
+    data_bytes = output.getvalue()
     st.download_button(label="Download Sample"
                        ,mime='application/vnd.ms-excel'
                        , file_name='sample.xlsx'
-                       # ,data=data_bytes
+                       ,data=data_bytes
                        )
     
     st.write("Now upload your demand and Supply files.") 
@@ -112,6 +113,7 @@ user_input_keywords = st_tags(
     key="tag_input",
 )
 # --------------------------------------------------------------------------------
+
 # Choose Algorithm, Number and Sort Type
 col1, col2, col3 = st.columns(3)
 with col1:
@@ -145,8 +147,9 @@ if button_id:
                                })
         tokenized_prd_df = tokenize(
             prd_df, ['prd_title', 'prd_description', 'prd_key_words'])
-        tokenized_dmd_df = pd.read_csv(dmd_url, converters={'tokenized_dmd_title': ast.literal_eval, 'tokenized_dmd_description': ast.literal_eval, 'tokenized_dmd_key_words': ast.literal_eval}
+        tokenized_dmd_df = pd.read_csv('tokenized_dmd_df.csv', converters={'tokenized_dmd_title': ast.literal_eval, 'tokenized_dmd_description': ast.literal_eval, 'tokenized_dmd_key_words': ast.literal_eval}
                                        )
+        tokenized_dmd_df = pd.concat((tokenized_dmd_df,tokenized_uploaded_dmd_df),axis=0)
 
         most_similar_dmd_for_prd_df = pd.DataFrame(
             {'prd': prd_df['prd_urlIdentifier']})
@@ -184,7 +187,7 @@ if button_id:
             for prd in prd_df['prd_urlIdentifier']:
                 sorted_dmd = matching_results[prd].sort_values(ascending=False)
                 # Exclude the prd herself
-                most_similar_dmd = dict(sorted_dmd[:100])
+                most_similar_dmd = dict(sorted_dmd[:15])
                 most_similar_dmd_for_prd[prd] = most_similar_dmd
 
             # Create DataFrames to display the results
@@ -200,10 +203,10 @@ if button_id:
 
         df = pd.DataFrame(most_similar_dmd_for_prd_df['total'].tolist()[0].items(), columns=[
                           'ID', 'Values']).sort_values('Values', ascending=False).reset_index(drop=True).iloc[:item_number, :]
-        df.Values = df.Values.round(2)
         df.index += 1
         df = pd.merge(df, tokenized_dmd_df[['dmd_urlIdentifier', 'dmd_title',
                                             'dmd_key_words']], left_on='ID', right_on='dmd_urlIdentifier').drop('dmd_urlIdentifier', axis=1).rename(columns={'dmd_title': 'Title', 'dmd_key_words': 'keywords'})
+
         if algo in ['Cosine + LDA', 'Jaccard + LDA']:
             tokenized_documents = tokenized_dmd_df['tokenized_dmd_description'].tolist(
             ) + tokenized_prd_df['tokenized_prd_description'].tolist()
@@ -212,7 +215,7 @@ if button_id:
             corpus = [dictionary.doc2bow(doc) for doc in tokenized_documents]
             # Train the LDA model
             lda_model = models.LdaModel(
-                corpus, num_topics=5, id2word=dictionary, passes=5)
+                corpus, num_topics=8, id2word=dictionary, passes=15)
 
             # Infer topic proportions for each document
             topic_proportions = [lda_model[doc] for doc in corpus]
@@ -234,8 +237,8 @@ if button_id:
             tokenized_dmd_df['lda_dmd_description'] = labeled_documents[:len(
                 tokenized_dmd_df)]
             df = df[df['ID'].isin(tokenized_dmd_df['dmd_urlIdentifier']
-                                  [tokenized_dmd_df['lda_dmd_description'] == labeled_documents[-1]])].reset_index()
-        df['Link'] = df['ID'].apply(
+                                  [tokenized_dmd_df['lda_dmd_description'] == labeled_documents[:-1]])]
+        df['Links'] = df['ID'].apply(
             lambda r: f'<a href="https://techmart.ir/demand/view/{r}">Link</a>')
 
     # ----------------------------------------------------------------------------------
@@ -245,9 +248,9 @@ if button_id:
                                })
         tokenized_dmd_df = tokenize(
             dmd_df, ['dmd_title', 'dmd_description', 'dmd_key_words'])
-        tokenized_prd_df = pd.read_csv(prd_url, converters={'tokenized_prd_title': ast.literal_eval, 'tokenized_prd_description': ast.literal_eval, 'tokenized_prd_key_words': ast.literal_eval}
+        tokenized_prd_df = pd.read_csv('tokenized_prd_df.csv', converters={'tokenized_prd_title': ast.literal_eval, 'tokenized_prd_description': ast.literal_eval, 'tokenized_prd_key_words': ast.literal_eval}
                                        )
-
+        tokenized_prd_df = pd.concat((tokenized_prd_df,tokenized_uploaded_prd_df),axis=0)
         most_similar_prd_for_dmd_df = pd.DataFrame(
             {'dmd': dmd_df['dmd_urlIdentifier']})
         for c in ['title', 'description', 'key_words']:
@@ -284,7 +287,7 @@ if button_id:
             for dmd in dmd_df['dmd_urlIdentifier']:
                 sorted_prd = matching_results[dmd].sort_values(ascending=False)
                 # Exclude the dmd herself
-                most_similar_prd = dict(sorted_prd[:100])
+                most_similar_prd = dict(sorted_prd[:15])
                 most_similar_prd_for_dmd[dmd] = most_similar_prd
 
             # Create DataFrames to display the results
@@ -299,19 +302,19 @@ if button_id:
             ), axis=1)
         df = pd.DataFrame(most_similar_prd_for_dmd_df['total'].tolist()[0].items(), columns=[
                           'ID', 'Values']).sort_values('Values', ascending=False).reset_index(drop=True).iloc[:item_number, :]
-        df.Values = df.Values.round(2)
         df.index += 1
         df = pd.merge(df, tokenized_prd_df[['prd_urlIdentifier', 'prd_title',
                                             'prd_key_words']], left_on='ID', right_on='prd_urlIdentifier').drop('prd_urlIdentifier', axis=1).rename(columns={'prd_title': 'Title', 'prd_key_words': 'keywords'})
+
         if algo in ['Cosine + LDA', 'Jaccard + LDA']:
-            tokenized_documents = tokenized_prd_df['tokenized_prd_description'].tolist(
-            ) + tokenized_dmd_df['tokenized_dmd_description'].tolist()
+            tokenized_documents = tokenized_dmd_df['tokenized_prd_description'].tolist(
+            ) + tokenized_prd_df['tokenized_dmd_description'].tolist()
             dictionary = corpora.Dictionary(tokenized_documents)
 
             corpus = [dictionary.doc2bow(doc) for doc in tokenized_documents]
             # Train the LDA model
             lda_model = models.LdaModel(
-                corpus, num_topics=5, id2word=dictionary, passes=5)
+                corpus, num_topics=8, id2word=dictionary, passes=15)
 
             # Infer topic proportions for each document
             topic_proportions = [lda_model[doc] for doc in corpus]
@@ -330,13 +333,12 @@ if button_id:
             # Assign automatically generated topic labels to the documents
             labeled_documents = [topic_labels[label]
                                  for label in document_labels]
-            tokenized_prd_df['lda_prd_description'] = labeled_documents[:len(
+            tokenized_dmd_df['lda_prd_description'] = labeled_documents[:len(
                 tokenized_prd_df)]
 
-            df = df[df['ID'].isin(tokenized_prd_df['prd_urlIdentifier']
-                                  [tokenized_prd_df['lda_prd_description'] == labeled_documents[-1]])].reset_index()
-        
-        df['Link'] = df['ID'].apply(
+            df = df[df['ID'].isin(tokenized_dmd_df['prd_urlIdentifier']
+                                  [tokenized_dmd_df['lda_prd_description'] == labeled_documents[:-1]])]
+        df['Links'] = df['ID'].apply(
             lambda r: f'<a href="https://techmart.ir/product/view/{r}">Link</a>')
     # ------------------------------------------------------------------------------------------
     # Apply the styling function to the 'Values' column
@@ -346,6 +348,11 @@ if button_id:
         # Convert the value to a color between red (0) and green (1)
         color = f'rgba({int((1 - val) * 255)}, {int(val * 255)}, 0, 0.5)'
         return [f'background-color: {color}' for _ in val]
+
+    styled_df = df.style.apply(gradient_color, subset=['Values'], axis=1)
+    st.write(styled_df.to_html(escape=False, index=False),
+             unsafe_allow_html=True, hide_index=True)
+
 
     styled_df = df.style.apply(gradient_color, subset=['Values'], axis=1)
     st.write(styled_df.to_html(escape=False, index=False),
