@@ -2,4 +2,3 @@ scipy==1.12
 streamlit-tags==1.2.8
 nltk
 hazm
-io
