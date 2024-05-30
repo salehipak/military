@@ -1,7 +1,7 @@
 # Import packages
 import streamlit as st
 from streamlit_tags import st_tags
-import io
+# import io
 import pandas as pd
 import numpy as np
 import nltk
@@ -68,15 +68,15 @@ if input_file == 'Yes':
         ,'description':['بویه های صیادی یکی از ملزومات مهم صنعت صید کشور می باشد که...']
         ,'keywords':[['ماهیگیری','صیادی']]
     })
-    output = io.BytesIO()
+    # output = io.BytesIO()
     writer = pd.ExcelWriter(output, engine="xlsxwriter")
-    data.to_excel(writer, index=False, sheet_name="sheet1")
+    # data.to_excel(writer, index=False, sheet_name="sheet1")
     writer.close()
-    data_bytes = output.getvalue()
+    # data_bytes = output.getvalue()
     st.download_button(label="Download Sample"
                        ,mime='application/vnd.ms-excel'
                        , file_name='sample.xlsx'
-                       ,data=data_bytes
+                       # ,data=data_bytes
                        )
     
     st.write("Now upload your demand and Supply files.") 
