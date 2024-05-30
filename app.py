@@ -1,3 +1,4 @@
+pip install -r requirements.txt
 # Import packages
 import streamlit as st
 from streamlit_tags import st_tags
