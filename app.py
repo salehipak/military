@@ -2,7 +2,6 @@
 import streamlit as st
 from streamlit_tags import st_tags
 import io
-from xlsxwriter import Workbook
 import pandas as pd
 import numpy as np
 import nltk
@@ -70,7 +69,7 @@ if input_file == 'Yes':
         ,'keywords':[['ماهیگیری','صیادی']]
     })
     output = io.BytesIO()
-    writer = pd.ExcelWriter(output, engine="xlsxwriter")
+    writer = pd.ExcelWriter(output)
     data.to_excel(writer, index=False, sheet_name="sheet1")
     writer.close()
     data_bytes = output.getvalue()
