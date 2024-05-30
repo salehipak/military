@@ -3,4 +3,4 @@ streamlit-tags==1.2.8
 nltk
 gensim==4.3.2
 hazm==0.9.4
-openpyxl
+XlsxWriter
