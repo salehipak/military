@@ -1,4 +1,5 @@
 scipy==1.12
 streamlit-tags==1.2.8
 nltk
-hazm
+gensim==4.3.2
+hazm==0.9.4
