@@ -93,7 +93,9 @@ if input_file == 'Yes':
         uploaded_dmd_df.insert(loc=2,column='Identifier',value= ['Manual_DMD_' + str(_ + 1) for _ in range(len(uploaded_dmd_df))])
         st.write(uploaded_dmd_df.head(5))
         tokenized_uploaded_dmd_df = tokenize(uploaded_dmd_df, ['title', 'description', 'key_words'])
-        tokenized_uploaded_dmd_df.to_csv('tokenized_uploaded_dmd_df.csv',index_label=False)
+    else: 
+        tokenized_uploaded_dmd_df = pd.DataFrame({columns:['tokenized_dmd_title', 'tokenized_dmd_description','tokenized_dmd_key_words']
+    tokenized_uploaded_dmd_df.to_csv('tokenized_uploaded_dmd_df.csv',index_label=False)
     
     upload_prd = st.file_uploader(":red[***Supply***]")
     if upload_prd is not None:
@@ -101,7 +103,9 @@ if input_file == 'Yes':
         uploaded_prd_df.insert(loc=2,column='Identifier',value= ['Manual_PRD_' + str(_ + 1) for _ in range(len(uploaded_prd_df))])
         st.write(uploaded_prd_df.head(5))
         tokenized_uploaded_prd_df = tokenize(uploaded_prd_df, ['title', 'description', 'key_words'])
-        tokenized_uploaded_prd_df.to_csv('tokenized_uploaded_prd_df.csv',index_label=False)
+    else: 
+        tokenized_uploaded_prd_df = pd.DataFrame({columns:['tokenized_prd_title', 'tokenized_prd_description','tokenized_prd_key_words']
+    tokenized_uploaded_prd_df.to_csv('tokenized_uploaded_prd_df.csv',index_label=False)
     st.divider()
 
 input_type = st.radio(
