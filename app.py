@@ -179,7 +179,7 @@ if button_id:
           tokenized_dmd_df['lda_dmd'] = labeled_documents[:len(
                 tokenized_dmd_df)]
             
-          df = tokenized_dmd_df[[tokenized_dmd_df['lda_dmd'] == labeled_documents[-1]])]
+          df = tokenized_dmd_df[tokenized_dmd_df['lda_dmd'] == labeled_documents[-1]]
           df = tokenized_dmd_df[['dmd_urlIdentifier', 'dmd_title','dmd_key_words','lda_dmd']].rename(columns={'dmd_title': 'Title', 'dmd_key_words': 'keywords','dmd_urlIdentifier':'ID','lda_dmd':'Label'}).reset_index().iloc[:item_number, :]
           df.index += 1
         
