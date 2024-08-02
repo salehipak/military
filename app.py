@@ -212,50 +212,52 @@ if button_id:
                     similarity_matrix = cosine_similarity(tfidf_matrix[:len(dmd_token)], tfidf_matrix[len(dmd_token):])
                     matching_results = pd.DataFrame(similarity_matrix, index=tokenized_dmd_df['dmd_urlIdentifier'], columns=tokenized_prd_df['prd_urlIdentifier'])
                     
+                    most_similar_dmd_for_prd = {}
+                    for prd in prd_df['prd_urlIdentifier']:
+                        sorted_dmd = matching_results[prd].sort_values(ascending=False)
+                        # Exclude the prd herself
+                        most_similar_dmd = dict(sorted_dmd[:100])
+                        most_similar_dmd_for_prd[prd] = most_similar_dmd
+    
+                    most_similar_dmd_for_prd_df = pd.merge(most_similar_dmd_for_prd_df, pd.DataFrame(
+                    most_similar_dmd_for_prd.items(), columns=['prd', 'Most Similar dmd ' + str(c)]))
+                    
+                most_similar_dmd_for_prd_df['total'] = most_similar_dmd_for_prd_df.apply(lambda x: dict(sum(map(Counter, x.iloc[1:4].apply(lambda y: dict(y))), start=Counter())), axis=1)
+    
             elif algo == 'Jaccard Similarity':    
                 most_similar_dmd_for_prd_df = pd.DataFrame({'prd': prd_df['prd_urlIdentifier']})
                 for c in ['title', 'description', 'key_words']:
                     dmd_token = [set(tokens) for tokens in tokenized_dmd_df['tokenized_dmd_' + str(c)]]
                     prd_token = [set(tokens) for tokens in tokenized_prd_df['tokenized_prd_' + str(c)]]
                     
-                similarity_matrix = np.zeros((len(dmd_token), len(prd_token)))
-                for i, dmd_tokens in enumerate(dmd_token):
-                    for j, prd_tokens in enumerate(prd_token):
-                        similarity_matrix[i, j] = jaccard_similarity(dmd_tokens, prd_tokens)
-                matching_results = pd.DataFrame(similarity_matrix, index=tokenized_dmd_df['dmd_urlIdentifier'], columns=tokenized_prd_df['prd_urlIdentifier'])
-                    
-                # Find the most similar dmd for each prd
-                most_similar_dmd_for_prd = {}
-                for prd in prd_df['prd_urlIdentifier']:
-                    sorted_dmd = matching_results[prd].sort_values(ascending=False)
-                    # Exclude the prd herself
-                    most_similar_dmd = dict(sorted_dmd[:100])
-                    most_similar_dmd_for_prd[prd] = most_similar_dmd
+                    similarity_matrix = np.zeros((len(dmd_token), len(prd_token)))
+                    for i, dmd_tokens in enumerate(dmd_token):
+                        for j, prd_tokens in enumerate(prd_token):
+                            similarity_matrix[i, j] = jaccard_similarity(dmd_tokens, prd_tokens)
+                    matching_results = pd.DataFrame(similarity_matrix, index=tokenized_dmd_df['dmd_urlIdentifier'], columns=tokenized_prd_df['prd_urlIdentifier'])
+                    most_similar_dmd_for_prd = {}
+                    for prd in prd_df['prd_urlIdentifier']:
+                        sorted_dmd = matching_results[prd].sort_values(ascending=False)
+                        # Exclude the prd herself
+                        most_similar_dmd = dict(sorted_dmd[:100])
+                        most_similar_dmd_for_prd[prd] = most_similar_dmd
     
-                # Create DataFrames to display the results
-                most_similar_dmd_for_prd_df = pd.merge(most_similar_dmd_for_prd_df, pd.DataFrame(
+                    most_similar_dmd_for_prd_df = pd.merge(most_similar_dmd_for_prd_df, pd.DataFrame(
                     most_similar_dmd_for_prd.items(), columns=['prd', 'Most Similar dmd ' + str(c)]))
-    
-            most_similar_dmd_for_prd_df['total'] = most_similar_dmd_for_prd_df.apply(
-                lambda x: dict(
-                    sum(
-                        map(Counter, x.iloc[1:4].apply(lambda y: dict(y))), start=Counter()
-                    )
-                ), axis=1)
-    
+                    
+                most_similar_dmd_for_prd_df['total'] = most_similar_dmd_for_prd_df.apply(lambda x: dict(sum(map(Counter, x.iloc[1:4].apply(lambda y: dict(y))), start=Counter())), axis=1)
+              
             df = pd.DataFrame(most_similar_dmd_for_prd_df['total'].tolist()[0].items(), columns=[
-                              'ID', 'Values']).sort_values('Values', ascending=False).reset_index(drop=True).iloc[:item_number, :]
+                          'ID', 'Values']).sort_values('Values', ascending=False).reset_index(drop=True).iloc[:item_number, :]
             df.Values = df.Values.round(2)
             df.index += 1
             df = pd.merge(df, tokenized_dmd_df[['dmd_urlIdentifier', 'dmd_title',
-                                                'dmd_key_words']], left_on='ID', right_on='dmd_urlIdentifier').drop('dmd_urlIdentifier', axis=1).rename(columns={'dmd_title': 'Title', 'dmd_key_words': 'keywords'})
-            
-            df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(
-            lambda r: f'<a href="https://techmart.ir/demand/view/{r}">Link</a>'))
+                                            'dmd_key_words']], left_on='ID', right_on='dmd_urlIdentifier').drop('dmd_urlIdentifier', axis=1).rename(columns={'dmd_title': 'Title', 'dmd_key_words': 'keywords'})
+        
+            df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(lambda r: f'<a href="https://techmart.ir/demand/view/{r}">Link</a>'))
 
             styled_df = df.style.apply(gradient_color, subset=['Values'], axis=1)
-            st.write(styled_df.to_html(escape=False, index=False),
-                 unsafe_allow_html=True, hide_index=True)
+            st.write(styled_df.to_html(escape=False, index=False),unsafe_allow_html=True, hide_index=True)
 
     # ----------------------------------------------------------------------------------
     # Demander
