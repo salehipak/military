@@ -94,7 +94,7 @@ if input_file == 'Yes':
         st.write(uploaded_dmd_df.head(5))
         tokenized_uploaded_dmd_df = tokenize(uploaded_dmd_df, ['title', 'description', 'key_words'])
     else: 
-        tokenized_uploaded_dmd_df = pd.DataFrame({columns:['tokenized_dmd_title', 'tokenized_dmd_description','tokenized_dmd_key_words']
+        tokenized_uploaded_dmd_df = pd.DataFrame(columns=['tokenized_dmd_title', 'tokenized_dmd_description','tokenized_dmd_key_words'])
     tokenized_uploaded_dmd_df.to_csv('tokenized_uploaded_dmd_df.csv',index_label=False)
     
     upload_prd = st.file_uploader(":red[***Supply***]")
@@ -104,7 +104,7 @@ if input_file == 'Yes':
         st.write(uploaded_prd_df.head(5))
         tokenized_uploaded_prd_df = tokenize(uploaded_prd_df, ['title', 'description', 'key_words'])
     else: 
-        tokenized_uploaded_prd_df = pd.DataFrame({columns:['tokenized_prd_title', 'tokenized_prd_description','tokenized_prd_key_words']
+        tokenized_uploaded_prd_df = pd.DataFrame(columns=['tokenized_prd_title', 'tokenized_prd_description','tokenized_prd_key_words'])
     tokenized_uploaded_prd_df.to_csv('tokenized_uploaded_prd_df.csv',index_label=False)
     st.divider()
 
