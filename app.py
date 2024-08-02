@@ -194,6 +194,8 @@ if button_id:
           df.index += 1
           df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(
           lambda r: f'<a href="https://techmart.ir/demand/view/{r}">Link</a>'))
+          st.write(df.to_html(escape=False, index=False),
+                 unsafe_allow_html=True, hide_index=True)
         
         else:
             if algo == 'Cosine Similarity':
