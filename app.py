@@ -184,35 +184,34 @@ if button_id:
           df.index += 1
         
         else: 
-        most_similar_dmd_for_prd_df = pd.DataFrame(
+            most_similar_dmd_for_prd_df = pd.DataFrame(
             {'prd': prd_df['prd_urlIdentifier']})
-        for c in ['title', 'description', 'key_words']:
-            # Create lists of tokenized title for dmd and prd
-            dmd_token = [' '.join(tokens)
-                         for tokens in tokenized_dmd_df['tokenized_dmd_' + str(c)]]
-            prd_token = [' '.join(tokens)
-                         for tokens in tokenized_prd_df['tokenized_prd_' + str(c)]]
-        # Initialize a TF-IDF vectorizer
-            tfidf_vectorizer = TfidfVectorizer()
+            for c in ['title', 'description', 'key_words']:
+                dmd_token = [' '.join(tokens)
+                             for tokens in tokenized_dmd_df['tokenized_dmd_' + str(c)]]
+                prd_token = [' '.join(tokens)
+                             for tokens in tokenized_prd_df['tokenized_prd_' + str(c)]]
+            # Initialize a TF-IDF vectorizer
+                tfidf_vectorizer = TfidfVectorizer()
+    
+                # Combine all title into one list
+                all_token = dmd_token + prd_token
+    
+                # Fit and transform the TF-IDF vectorizer on all title
+                tfidf_matrix = tfidf_vectorizer.fit_transform(all_token)
 
-            # Combine all title into one list
-            all_token = dmd_token + prd_token
-
-            # Fit and transform the TF-IDF vectorizer on all title
-            tfidf_matrix = tfidf_vectorizer.fit_transform(all_token)
-
-            # Calculate similarity between dmd and prd
-            if algo == 'Cosine Similarity':
-                similarity_matrix = cosine_similarity(
-                    tfidf_matrix[:len(dmd_token)], tfidf_matrix[len(dmd_token):])
-                matching_results = pd.DataFrame(similarity_matrix, index=tokenized_dmd_df['dmd_urlIdentifier'], columns=tokenized_prd_df['prd_urlIdentifier'])
-                
-            elif algo == 'Jaccard Similarity':
-                similarity_matrix = np.zeros((len(dmd_token), len(prd_token)))
-                for i, dmd_tokens in enumerate(dmd_token):
-                    for j, prd_tokens in enumerate(prd_token):
-                        similarity_matrix[i, j] = jaccard_similarity(dmd_tokens, prd_tokens)
-                matching_results = pd.DataFrame(similarity_matrix, index=tokenized_dmd_df['dmd_urlIdentifier'], columns=tokenized_prd_df['prd_urlIdentifier'])
+                # Calculate similarity between dmd and prd
+                if algo == 'Cosine Similarity':
+                    similarity_matrix = cosine_similarity(
+                        tfidf_matrix[:len(dmd_token)], tfidf_matrix[len(dmd_token):])
+                    matching_results = pd.DataFrame(similarity_matrix, index=tokenized_dmd_df['dmd_urlIdentifier'], columns=tokenized_prd_df['prd_urlIdentifier'])
+                    
+                elif algo == 'Jaccard Similarity':
+                    similarity_matrix = np.zeros((len(dmd_token), len(prd_token)))
+                    for i, dmd_tokens in enumerate(dmd_token):
+                        for j, prd_tokens in enumerate(prd_token):
+                            similarity_matrix[i, j] = jaccard_similarity(dmd_tokens, prd_tokens)
+                    matching_results = pd.DataFrame(similarity_matrix, index=tokenized_dmd_df['dmd_urlIdentifier'], columns=tokenized_prd_df['prd_urlIdentifier'])
                 
                 # Find the most similar dmd for each prd
                 most_similar_dmd_for_prd = {}
