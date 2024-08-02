@@ -17,10 +17,16 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.metrics import jaccard_score
 from gensim import corpora, models
 from gensim.models.coherencemodel import CoherenceModel
+
 def jaccard_similarity(set1, set2):
     intersection = len(set1.intersection(set2))
     union = len(set1.union(set2))
     return intersection / union
+    
+def gradient_color(val):
+    # Convert the value to a color between red (0) and green (1)
+    color = f'rgba({int((1 - val) * 255)}, {int(val * 255)}, 0, 0.5)'
+    return [f'background-color: {color}' for _ in val]
 # -------------------------------------------------------------------------------
 nmz = Normalizer()
 nltk.download("punkt")
@@ -186,6 +192,8 @@ if button_id:
           df = tokenized_dmd_df[tokenized_dmd_df['lda_dmd'] == labeled_documents[-1]]
           df = tokenized_dmd_df[['dmd_urlIdentifier', 'dmd_title','dmd_key_words','lda_dmd']].rename(columns={'dmd_title': 'Title', 'dmd_key_words': 'keywords','dmd_urlIdentifier':'ID','lda_dmd':'Label'}).reset_index().iloc[:item_number, :]
           df.index += 1
+          df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(
+          lambda r: f'<a href="https://techmart.ir/demand/view/{r}">Link</a>'))
         
         else:
             if algo == 'Cosine Similarity':
@@ -240,9 +248,12 @@ if button_id:
             df = pd.merge(df, tokenized_dmd_df[['dmd_urlIdentifier', 'dmd_title',
                                                 'dmd_key_words']], left_on='ID', right_on='dmd_urlIdentifier').drop('dmd_urlIdentifier', axis=1).rename(columns={'dmd_title': 'Title', 'dmd_key_words': 'keywords'})
             
-        
-        df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(
+            df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(
             lambda r: f'<a href="https://techmart.ir/demand/view/{r}">Link</a>'))
+
+            styled_df = df.style.apply(gradient_color, subset=['Values'], axis=1)
+            st.write(styled_df.to_html(escape=False, index=False),
+                 unsafe_allow_html=True, hide_index=True)
 
     # ----------------------------------------------------------------------------------
     # Demander
@@ -349,14 +360,4 @@ if button_id:
         df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(
             lambda r: f'<a href="https://techmart.ir/product/view/{r}">Link</a>'))
     # ------------------------------------------------------------------------------------------
-    # Apply the styling function to the 'Values' column
-        # apply gradient styling
 
-    def gradient_color(val):
-        # Convert the value to a color between red (0) and green (1)
-        color = f'rgba({int((1 - val) * 255)}, {int(val * 255)}, 0, 0.5)'
-        return [f'background-color: {color}' for _ in val]
-
-    styled_df = df.style.apply(gradient_color, subset=['Values'], axis=1)
-    st.write(styled_df.to_html(escape=False, index=False),
-             unsafe_allow_html=True, hide_index=True)
