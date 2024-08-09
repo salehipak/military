@@ -294,7 +294,7 @@ if button_id:
           df = df[['prd_urlIdentifier', 'prd_title','prd_key_words','lda_prd']].rename(columns={'prd_title': 'Title', 'prd_key_words': 'keywords','prd_urlIdentifier':'ID','lda_prd':'Label'}).iloc[-item_number:, :].reset_index()
           df.index += 1
           df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(
-          lambda r: f'<a href="https://techmart.ir/demand/view/{r}">Link</a>'))
+          lambda r: f'<a href="https://techmart.ir/product/view/{r}">Link</a>'))
           st.write(df.to_html(escape=False, index=False),
                  unsafe_allow_html=True, hide_index=True)
         
