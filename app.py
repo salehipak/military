@@ -283,7 +283,7 @@ if button_id:
                 print('You have not uploded a file')
         else:
             dmd_df = pd.DataFrame({'dmd_id':1,'dmd_urlIdentifier': 'DMD--1', 'dmd_title': [user_input_title], 'dmd_description': [user_input_description], 'dmd_key_words': str([user_input_keywords])
-                           })           
+                           })   
         tokenized_dmd_df = tokenize(
             dmd_df, ['dmd_title', 'dmd_description', 'dmd_key_words'])
         tokenized_prd_df = pd.read_csv('tokenized_prd_df.csv', converters={'tokenized_prd_title': ast.literal_eval, 'tokenized_prd_description': ast.literal_eval, 'tokenized_prd_key_words': ast.literal_eval}
