@@ -262,7 +262,7 @@ if button_id:
                            })           
         tokenized_dmd_df = tokenize(
             dmd_df, ['dmd_title', 'dmd_description', 'dmd_key_words'])
-        tokenized_dmd_df = pd.read_csv('tokenized_dmd_df.csv', converters={'tokenized_dmd_title': ast.literal_eval, 'tokenized_dmd_description': ast.literal_eval, 'tokenized_dmd_key_words': ast.literal_eval}
+        tokenized_prd_df = pd.read_csv('tokenized_prd_df.csv', converters={'tokenized_prd_title': ast.literal_eval, 'tokenized_prd_description': ast.literal_eval, 'tokenized_prd_key_words': ast.literal_eval}
                                        )
         st.divider()
     
