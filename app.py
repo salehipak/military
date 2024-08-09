@@ -18,9 +18,12 @@ from sklearn.metrics import jaccard_score
 from gensim import corpora, models
 from gensim.models.coherencemodel import CoherenceModel
 
-def average_counters(counter_list):
-    total_counter = sum(counter_list, start=Counter())
-    return {k: v / len(counter_list) for k, v in total_counter.items()}
+def max_counters(counter_list):
+    max_counter = Counter()
+    for counter in counter_list:
+        for key, value in counter.items():
+            max_counter[key] = max(max_counter.get(key, float('-inf')), value)
+    return max_counter
     
 def jaccard_similarity(set1, set2):
     intersection = len(set1.intersection(set2))
@@ -217,7 +220,7 @@ if button_id:
     
                     most_similar_dmd_for_prd_df = pd.merge(most_similar_dmd_for_prd_df, pd.DataFrame(
                     most_similar_dmd_for_prd.items(), columns=['prd', 'Most Similar dmd ' + str(c)]))
-                most_similar_dmd_for_prd_df['total'] = most_similar_dmd_for_prd_df.apply(lambda x: average_counters([Counter(dict(y)) for y in x.iloc[1:4]]), axis=1)
+                most_similar_dmd_for_prd_df['total'] = most_similar_dmd_for_prd_df.apply(lambda x: max_counters([Counter(dict(y)) for y in x.iloc[1:4]]), axis=1)
                 # most_similar_dmd_for_prd_df['total'] = most_similar_dmd_for_prd_df.apply(lambda x: dict(sum(map(Counter, x.iloc[1:4].apply(lambda y: dict(y))), start=Counter())), axis=1)
     
             elif algo == 'Jaccard Similarity':    
@@ -240,7 +243,7 @@ if button_id:
     
                     most_similar_dmd_for_prd_df = pd.merge(most_similar_dmd_for_prd_df, pd.DataFrame(
                     most_similar_dmd_for_prd.items(), columns=['prd', 'Most Similar dmd ' + str(c)]))
-                most_similar_dmd_for_prd_df['total'] = most_similar_dmd_for_prd_df.apply(lambda x: average_counters([Counter(dict(y)) for y in x.iloc[1:4]]), axis=1)  
+                most_similar_dmd_for_prd_df['total'] = most_similar_dmd_for_prd_df.apply(lambda x: max_counters([Counter(dict(y)) for y in x.iloc[1:4]]), axis=1)  
                 # most_similar_dmd_for_prd_df['total'] = most_similar_dmd_for_prd_df.apply(lambda x: dict(sum(map(Counter, x.iloc[1:4].apply(lambda y: dict(y))), start=Counter())), axis=1)
               
             df = pd.DataFrame(most_similar_dmd_for_prd_df['total'].tolist()[0].items(), columns=[
@@ -321,7 +324,7 @@ if button_id:
                     most_similar_prd_for_dmd.items(), columns=['dmd', 'Most Similar prd ' + str(c)]))
                     
                 # most_similar_prd_for_dmd_df['total'] = most_similar_prd_for_dmd_df.apply(lambda x: dict(sum(map(Counter, x.iloc[1:4].apply(lambda y: dict(y))), start=Counter())), axis=1)
-                most_similar_prd_for_dmd_df['total'] = most_similar_prd_for_dmd_df.apply(lambda x: average_counters([Counter(dict(y)) for y in x.iloc[1:4]]), axis=1)
+                most_similar_prd_for_dmd_df['total'] = most_similar_prd_for_dmd_df.apply(lambda x: max_counters([Counter(dict(y)) for y in x.iloc[1:4]]), axis=1)
             elif algo == 'Jaccard Similarity':    
                 most_similar_prd_for_dmd_df = pd.DataFrame({'dmd': dmd_df['dmd_urlIdentifier']})
                 for c in ['title', 'description', 'key_words']:
@@ -344,7 +347,7 @@ if button_id:
                     most_similar_prd_for_dmd.items(), columns=['dmd', 'Most Similar prd ' + str(c)]))
         
                 # most_similar_prd_for_dmd_df['total'] = most_similar_prd_for_dmd_df.apply(lambda x: dict(sum(map(Counter, x.iloc[1:4].apply(lambda y: dict(y))), start=Counter())), axis=1)
-                most_similar_prd_for_dmd_df['total'] = most_similar_prd_for_dmd_df.apply(lambda x: average_counters([Counter(dict(y)) for y in x.iloc[1:4]]), axis=1)
+                most_similar_prd_for_dmd_df['total'] = most_similar_prd_for_dmd_df.apply(lambda x: max_counters([Counter(dict(y)) for y in x.iloc[1:4]]), axis=1)
             df = pd.DataFrame(most_similar_prd_for_dmd_df['total'].tolist()[0].items(), columns=[
                           'ID', 'Values']).sort_values('Values', ascending=False).reset_index(drop=True).iloc[:item_number, :]
             df.Values = df.Values.round(2)
