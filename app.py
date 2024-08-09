@@ -71,6 +71,11 @@ input_type = st.radio(
     key="visibility",
     options=["Supplier", "Demander"]
 )
+input_file = st.radio(
+    "Do you want to upload a file?",
+    options=["Yes", "No"]
+    , index=1
+)
 # Input Title, Description and Keywords
 user_input_title = st.text_input(
     "Enter Title:", placeholder='Please enter your title here.', max_chars=100)
@@ -113,11 +118,6 @@ if button_id:
     # --------------------------------------------------------------------------------
     # Supplier
     if input_type == 'Supplier':
-        input_file = st.radio(
-    "Do you want to upload a file?",
-    options=["Yes", "No"]
-    , index=1
-)
         if input_file == 'Yes':
         # Demmender or supplier
             # st.divider()
@@ -245,11 +245,6 @@ if button_id:
             st.write(styled_df.to_html(escape=False, index=False),unsafe_allow_html=True, hide_index=True)
 #----------------------------------
     if input_file == 'Yes':
-        input_file = st.radio(
-    "Do you want to upload a file?",
-    options=["Yes", "No"]
-    , index=1
-)
         if input_file == 'Yes':
         # Demmender or supplier
             # st.divider()
