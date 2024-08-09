@@ -83,6 +83,8 @@ sample_data = pd.DataFrame({
             ,'key_words':[['ماهیگیری','صیادی']]
         })
 
+upload_prd == None
+upload_dmd == None
 if input_file == 'Yes':
 # Demmender or supplier
     # st.divider()
