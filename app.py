@@ -117,9 +117,9 @@ if input_file == 'Yes':
         try:
             uploaded_prd_df = pd.DataFrame(pd.read_excel(uploaded_file)).sort_values('prd_id')
             uploaded_prd_df.insert(loc=1,column='prd_Identifier',value= ['Manual_PRD_' + str(_ + 1) for _ in range(len(uploaded_prd_df))])
+            tokenized_prd_df = tokenize(uploaded_prd_df, ['prd_title', 'prd_description', 'prd_key_words'])
             uploaded_prd_df.index +=1
             st.write(uploaded_prd_df.head(5))
-            tokenized_prd_df = tokenize(uploaded_prd_df, ['prd_title', 'prd_description', 'prd_key_words'])
         except ValueError as err:
             print("Error")
                
@@ -140,9 +140,9 @@ if input_file == 'Yes':
         try:
             uploaded_dmd_df = pd.DataFrame(pd.read_excel(uploaded_file)).sort_values('dmd_id')
             uploaded_dmd_df.insert(loc=1,column='dmd_Identifier',value= ['Manual_DMD_' + str(_ + 1) for _ in range(len(uploaded_dmd_df))])
+            tokenized_dmd_df = tokenize(uploaded_dmd_df, ['dmd_title', 'dmd_description', 'dmd_key_words'])
             uploaded_dmd_df.index +=1
             st.write(uploaded_dmd_df.head(5)) 
-            tokenized_dmd_df = tokenize(uploaded_dmd_df, ['dmd_title', 'dmd_description', 'dmd_key_words'])
         except ValueError as err:
             print("Error")
 else: 
