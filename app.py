@@ -99,9 +99,6 @@ if input_file == 'Yes':
         uploaded_dmd_df.insert(loc=2,column='Identifier',value= ['Manual_DMD_' + str(_ + 1) for _ in range(len(uploaded_dmd_df))])
         st.write(uploaded_dmd_df.head(5))
         tokenized_uploaded_dmd_df = tokenize(uploaded_dmd_df, ['title', 'description', 'key_words'])
-    else: 
-        tokenized_uploaded_dmd_df = pd.DataFrame(columns=['id','title','Identifier', 'description', 'key_words','tokenized_title', 'tokenized_description','tokenized_key_words'])
-    tokenized_uploaded_dmd_df.to_csv('tokenized_uploaded_dmd_df.csv',index_label=False)
     
     upload_prd = st.file_uploader(":red[***Supply***]")
     if upload_prd is not None:
@@ -109,9 +106,6 @@ if input_file == 'Yes':
         uploaded_prd_df.insert(loc=2,column='Identifier',value= ['Manual_PRD_' + str(_ + 1) for _ in range(len(uploaded_prd_df))])
         st.write(uploaded_prd_df.head(5))
         tokenized_uploaded_prd_df = tokenize(uploaded_prd_df, ['title', 'description', 'key_words'])
-    else: 
-        tokenized_uploaded_prd_df = pd.DataFrame(columns=['id','title','Identifier','description', 'key_words','tokenized_title', 'tokenized_description','tokenized_key_words'])
-    tokenized_uploaded_prd_df.to_csv('tokenized_uploaded_prd_df.csv',index_label=False)
     st.divider()
 
 input_type = st.radio(
@@ -167,10 +161,9 @@ if button_id:
             prd_df, ['prd_title', 'prd_description', 'prd_key_words'])
         tokenized_dmd_df = pd.read_csv('tokenized_dmd_df.csv', converters={'tokenized_dmd_title': ast.literal_eval, 'tokenized_dmd_description': ast.literal_eval, 'tokenized_dmd_key_words': ast.literal_eval}
                                        )
-        tokenized_uploaded_dmd_df = pd.read_csv('tokenized_uploaded_dmd_df.csv', converters={'tokenized_title': ast.literal_eval, 'tokenized_description': ast.literal_eval, 'tokenized_key_words': ast.literal_eval}
-                                       )
-        tokenized_uploaded_dmd_df.columns = tokenized_dmd_df.columns
-        tokenized_dmd_df = pd.concat((tokenized_dmd_df,tokenized_uploaded_dmd_df),axis=0)
+        if upload_dmd is not None:
+            tokenized_uploaded_dmd_df.columns = tokenized_dmd_df.columns
+            tokenized_dmd_df = pd.concat((tokenized_dmd_df,tokenized_uploaded_dmd_df),axis=0)
 
         if algo == 'LDA':
           tokenized_documents = (tokenized_dmd_df['tokenized_dmd_title'] + tokenized_dmd_df['tokenized_dmd_description'] + tokenized_dmd_df['tokenized_dmd_key_words']).tolist() + (tokenized_prd_df['tokenized_prd_title'] + tokenized_prd_df['tokenized_prd_description'] + tokenized_prd_df['tokenized_prd_key_words']).tolist() 
@@ -265,10 +258,9 @@ if button_id:
             dmd_df, ['dmd_title', 'dmd_description', 'dmd_key_words'])
         tokenized_prd_df = pd.read_csv('tokenized_prd_df.csv', converters={'tokenized_prd_title': ast.literal_eval, 'tokenized_prd_description': ast.literal_eval, 'tokenized_prd_key_words': ast.literal_eval}
                                        )
-        tokenized_uploaded_prd_df = pd.read_csv('tokenized_uploaded_prd_df.csv', converters={'tokenized_title': ast.literal_eval, 'tokenized_description': ast.literal_eval, 'tokenized_key_words': ast.literal_eval}
-                                       )
-        tokenized_uploaded_prd_df.columns = tokenized_prd_df.columns
-        tokenized_prd_df = pd.concat((tokenized_prd_df,tokenized_uploaded_prd_df),axis=0)
+        if upload_prd is not None:
+            tokenized_uploaded_prd_df.columns = tokenized_prd_df.columns
+            tokenized_prd_df = pd.concat((tokenized_prd_df,tokenized_uploaded_prd_df),axis=0)
 
         if algo == 'LDA':
           tokenized_documents = (tokenized_prd_df['tokenized_prd_title'] + tokenized_prd_df['tokenized_prd_description'] + tokenized_prd_df['tokenized_prd_key_words']).tolist() + (tokenized_dmd_df['tokenized_dmd_title'] + tokenized_dmd_df['tokenized_dmd_description'] + tokenized_dmd_df['tokenized_dmd_key_words']).tolist() 
