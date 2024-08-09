@@ -114,14 +114,15 @@ if input_file == 'Yes':
                            )
         st.write("Please upload your Supply file.")
         uploaded_file = st.file_uploader(":red[***Supply***]")
-        uploaded_prd_df = pd.read_excel(uploaded_file).sort_values('id')
-        uploaded_prd_df.insert(loc=2,column='prd_Identifier',value= ['Manual_PRD_' + str(_ + 1) for _ in range(len(uploaded_prd_df))])
-        uploaded_prd_df.index +=1
-        st.write(uploaded_prd_df.head(5))
-        
-        tokenized_prd_df = tokenize(uploaded_prd_df, ['prd_title', 'prd_description', 'prd_key_words'])
-       
-        
+        try:
+            uploaded_prd_df = pd.read_excel(uploaded_file).sort_values('id')
+            uploaded_prd_df.insert(loc=2,column='prd_Identifier',value= ['Manual_PRD_' + str(_ + 1) for _ in range(len(uploaded_prd_df))])
+            uploaded_prd_df.index +=1
+            st.write(uploaded_prd_df.head(5))
+            tokenized_prd_df = tokenize(uploaded_prd_df, ['prd_title', 'prd_description', 'prd_key_words'])
+        except ValueError as err:
+            print("Error")
+               
     else:
         data = dmd_sample_data
         output = io.BytesIO()
@@ -136,13 +137,14 @@ if input_file == 'Yes':
                            )
         st.write("Please upload your demand file.")
         uploaded_file = st.file_uploader(":red[***Demand***]")  
-        uploaded_dmd_df = pd.read_excel(uploaded_file).sort_values('id')
-        uploaded_dmd_df.insert(loc=2,column='dmd_Identifier',value= ['Manual_DMD_' + str(_ + 1) for _ in range(len(uploaded_dmd_df))])
-        uploaded_dmd_df.index +=1
-        st.write(uploaded_dmd_df.head(5))
-        
-        tokenized_dmd_df = tokenize(uploaded_dmd_df, ['dmd_title', 'dmd_description', 'dmd_key_words'])
-
+        try:
+            uploaded_dmd_df = pd.read_excel(uploaded_file).sort_values('id')
+            uploaded_dmd_df.insert(loc=2,column='dmd_Identifier',value= ['Manual_DMD_' + str(_ + 1) for _ in range(len(uploaded_dmd_df))])
+            uploaded_dmd_df.index +=1
+            st.write(uploaded_dmd_df.head(5))  
+            tokenized_dmd_df = tokenize(uploaded_dmd_df, ['dmd_title', 'dmd_description', 'dmd_key_words'])
+        except ValueError as err:
+            print("Error")
 else: 
     # Input Title, Description and Keywords
     user_input_title = st.text_input(
