@@ -176,7 +176,7 @@ if button_id:
         try:
             prd_df = uploaded_prd_df.rename(columns = {'id':'prd_id','title':'prd_title','urlIdentifier':'prd_urlIdentifier','description':'prd_description','key_words':'prd_key_words'})
         except Exception:
-            prd_df = pd.DataFrame({'prd_id' = 1,'prd_urlIdentifier': 'PRD--1', 'prd_title': [user_input_title], 'prd_description': [user_input_description], 'prd_key_words': str([user_input_keywords])
+            prd_df = pd.DataFrame({'prd_id': 1,'prd_urlIdentifier': 'PRD--1', 'prd_title': [user_input_title], 'prd_description': [user_input_description], 'prd_key_words': str([user_input_keywords])
                            })
             
         tokenized_prd_df = tokenize(
