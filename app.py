@@ -157,11 +157,11 @@ if button_id:
             prd_df = pd.DataFrame({'prd_urlIdentifier': 'PRD--1', 'prd_title': [user_input_title], 'prd_description': [user_input_description], 'prd_key_words': str([user_input_keywords])
                            })
             
-    tokenized_prd_df = tokenize(
-        prd_df, ['prd_title', 'prd_description', 'prd_key_words'])
-    tokenized_dmd_df = pd.read_csv('tokenized_dmd_df.csv', converters={'tokenized_dmd_title': ast.literal_eval, 'tokenized_dmd_description': ast.literal_eval, 'tokenized_dmd_key_words': ast.literal_eval}
-                                   )
-    st.divider()
+        tokenized_prd_df = tokenize(
+            prd_df, ['prd_title', 'prd_description', 'prd_key_words'])
+        tokenized_dmd_df = pd.read_csv('tokenized_dmd_df.csv', converters={'tokenized_dmd_title': ast.literal_eval, 'tokenized_dmd_description': ast.literal_eval, 'tokenized_dmd_key_words': ast.literal_eval}
+                                       )
+        st.divider()
         
         if algo == 'LDA':
           tokenized_documents = (tokenized_dmd_df['tokenized_dmd_title'] + tokenized_dmd_df['tokenized_dmd_description'] + tokenized_dmd_df['tokenized_dmd_key_words']).tolist() + (tokenized_prd_df['tokenized_prd_title'] + tokenized_prd_df['tokenized_prd_description'] + tokenized_prd_df['tokenized_prd_key_words']).tolist() 
@@ -258,13 +258,12 @@ if button_id:
             st.write(uploaded_dmd_df.head(5))
         else:
             dmd_df = pd.DataFrame({'dmd_urlIdentifier': 'DMD--1', 'dmd_title': [user_input_title], 'dmd_description': [user_input_description], 'dmd_key_words': str([user_input_keywords])
-                           })
-            
-    tokenized_dmd_df = tokenize(
-        dmd_df, ['dmd_title', 'dmd_description', 'dmd_key_words'])
-    tokenized_dmd_df = pd.read_csv('tokenized_dmd_df.csv', converters={'tokenized_dmd_title': ast.literal_eval, 'tokenized_dmd_description': ast.literal_eval, 'tokenized_dmd_key_words': ast.literal_eval}
-                                   )
-    st.divider()
+                           })           
+        tokenized_dmd_df = tokenize(
+            dmd_df, ['dmd_title', 'dmd_description', 'dmd_key_words'])
+        tokenized_dmd_df = pd.read_csv('tokenized_dmd_df.csv', converters={'tokenized_dmd_title': ast.literal_eval, 'tokenized_dmd_description': ast.literal_eval, 'tokenized_dmd_key_words': ast.literal_eval}
+                                       )
+        st.divider()
     
         if algo == 'LDA':
           tokenized_documents = (tokenized_prd_df['tokenized_prd_title'] + tokenized_prd_df['tokenized_prd_description'] + tokenized_prd_df['tokenized_prd_key_words']).tolist() + (tokenized_dmd_df['tokenized_dmd_title'] + tokenized_dmd_df['tokenized_dmd_description'] + tokenized_dmd_df['tokenized_dmd_key_words']).tolist() 
