@@ -173,6 +173,7 @@ if button_id:
     # --------------------------------------------------------------------------------
     # Supplier
     if input_type == 'Supplier':
+        tokenized_dmd_df = pd.read_csv('tokenized_dmd_df.csv', converters={'tokenized_dmd_title': ast.literal_eval, 'tokenized_dmd_description': ast.literal_eval, 'tokenized_dmd_key_words': ast.literal_eval})
         if input_file == 'Yes':
             try:
                 prd_df = uploaded_prd_df.rename(columns = {'id':'prd_id','title':'prd_title','urlIdentifier':'prd_urlIdentifier','description':'prd_description','key_words':'prd_key_words'})
@@ -180,12 +181,8 @@ if button_id:
                 print('You have not uploded a file')
         else:
             prd_df = pd.DataFrame({'prd_id': 1,'prd_urlIdentifier': 'PRD--1', 'prd_title': [user_input_title], 'prd_description': [user_input_description], 'prd_key_words': str([user_input_keywords])
-                               })
-            
-        tokenized_prd_df = tokenize(
-            prd_df, ['prd_title', 'prd_description', 'prd_key_words'])
-        tokenized_dmd_df = pd.read_csv('tokenized_dmd_df.csv', converters={'tokenized_dmd_title': ast.literal_eval, 'tokenized_dmd_description': ast.literal_eval, 'tokenized_dmd_key_words': ast.literal_eval}
-                                       )
+                               })         
+        tokenized_prd_df = tokenize(prd_df, ['prd_title', 'prd_description', 'prd_key_words'])
         st.divider()
         
         if algo == 'LDA':
@@ -276,6 +273,7 @@ if button_id:
 #----------------------------------
 # Demander
     if input_type == 'Demander':
+        tokenized_prd_df = pd.read_csv('tokenized_prd_df.csv', converters={'tokenized_prd_title': ast.literal_eval, 'tokenized_prd_description': ast.literal_eval, 'tokenized_prd_key_words': ast.literal_eval})
         if input_file == 'Yes':
             try:
                 dmd_df = uploaded_dmd_df.rename(columns = {'id':'dmd_id','title':'dmd_title','urlIdentifier':'dmd_urlIdentifier','description':'dmd_description','key_words':'dmd_key_words'})
@@ -286,8 +284,6 @@ if button_id:
                            })   
         tokenized_dmd_df = tokenize(
             dmd_df, ['dmd_title', 'dmd_description', 'dmd_key_words'])
-        tokenized_prd_df = pd.read_csv('tokenized_prd_df.csv', converters={'tokenized_prd_title': ast.literal_eval, 'tokenized_prd_description': ast.literal_eval, 'tokenized_prd_key_words': ast.literal_eval}
-                                       )
         st.divider()
     
         if algo == 'LDA':
