@@ -100,12 +100,11 @@ if input_file == 'Yes':
                        ,data=data_bytes
                        )
     if input_type == 'Supplier':
-        st.write("Please ppload your Supply file.")
+        st.write("Please upload your Supply file.")
         upload_prd = st.file_uploader(":red[***Supply***]")
     else:
         st.write("Please upload your demand file.")
-        upload_dmd = st.file_uploader(":red[***Demand***]")
-        
+        upload_dmd = st.file_uploader(":red[***Demand***]")   
 else: 
     # Input Title, Description and Keywords
     user_input_title = st.text_input(
@@ -119,9 +118,9 @@ else:
         value=keywords,
         key="tag_input",
     )
- st.divider()
 # --------------------------------------------------------------------------------
 # Choose Algorithm, Number and Sort Type
+st.divider()
 col1, col2, col3 = st.columns(3)
 with col1:
     algo = st.selectbox('Algorithm',
