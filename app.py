@@ -99,19 +99,19 @@ prd_sample_data = pd.DataFrame({
             ,'prd_key_words':[['ماهیگیری','صیادی']]
         })
 if input_file == 'Yes':
-    if input_type == 'Supplier':
     st.write("Please download sample file below. Your file should have :red[***.xlsx***] format with the same columns.")
-    data = prd_sample_data
-    output = io.BytesIO()
-    writer = pd.ExcelWriter(output, engine="xlsxwriter")
-    data.to_excel(writer, index=False, sheet_name="sheet1")
-    writer.close()
-    data_bytes = output.getvalue()
-    st.download_button(label="Download Sample"
-                       ,mime='application/vnd.ms-excel'
-                       , file_name='prd_sample.xlsx'
-                       ,data=data_bytes
-                       )
+    if input_type == 'Supplier':
+        data = prd_sample_data
+        output = io.BytesIO()
+        writer = pd.ExcelWriter(output, engine="xlsxwriter")
+        data.to_excel(writer, index=False, sheet_name="sheet1")
+        writer.close()
+        data_bytes = output.getvalue()
+        st.download_button(label="Download Sample"
+                           ,mime='application/vnd.ms-excel'
+                           , file_name='prd_sample.xlsx'
+                           ,data=data_bytes
+                           )
         st.write("Please upload your Supply file.")
         uploaded_file = st.file_uploader(":red[***Supply***]")
         uploaded_prd_df = pd.read_excel(uploaded_file).sort_values('id')
@@ -123,7 +123,6 @@ if input_file == 'Yes':
        
         
     else:
-        st.write("Please download sample file below. Your file should have :red[***.xlsx***] format with the same columns.")
         data = dmd_sample_data
         output = io.BytesIO()
         writer = pd.ExcelWriter(output, engine="xlsxwriter")
