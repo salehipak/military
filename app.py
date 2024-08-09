@@ -259,7 +259,7 @@ if button_id:
             df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(lambda r: f'<a href="https://techmart.ir/demand/view/{r}">Link</a>'))
 
             styled_df = df.style.apply(gradient_color, subset=['Values'], axis=1)
-            st.write(styled_df.to_html(escape=False, index=False),unsafe_allow_html=True, hide_index=True)
+            st.write(styled_df.to_html(escape=False, index=True),unsafe_allow_html=True, hide_index=False)
 #----------------------------------
 # Demander
     if input_type == 'Demander':
@@ -361,7 +361,7 @@ if button_id:
             df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(lambda r: f'<a href="https://techmart.ir/product/view/{r}">Link</a>'))
 
             styled_df = df.style.apply(gradient_color, subset=['Values'], axis=1)
-            st.write(styled_df.to_html(escape=False, index=False),unsafe_allow_html=True, hide_index=True)
+            st.write(styled_df.to_html(escape=False, index=True),unsafe_allow_html=True, hide_index=False)
 
     # ------------------------------------------------------------------------------------------
 
