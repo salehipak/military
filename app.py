@@ -28,8 +28,11 @@ def max_counters(counter_list):
 def jaccard_similarity(set1, set2):
     intersection = len(set1.intersection(set2))
     union = len(set1.union(set2))
-    return intersection / union
-    
+    try:
+        returnintersection / union
+    except ZeroDivisionError:
+        return 0
+
 def gradient_color(val):
     # Convert the value to a color between red (0) and green (1)
     color = f'rgba({int((1 - val) * 255)}, {int(val * 255)}, 0, 0.5)'
@@ -44,7 +47,7 @@ fa_stops = sorted(list(set([nmz.normalize(w) for w in codecs.open(
     'persian.txt', encoding='utf-8').read().split('\n') if w])))
 
 specific_stops = ['جمله', 'سیستم', 'تولید', 'دستگاه', 'طراحی', 'شرکت', 'ساخت', 'مخصوص',
-                  'مصرف', 'کشور', 'خروجی', 'کیفیت', 'کاربرد', 'ارائه', 'کار', 'موجود', 'قطعه', 'سال']
+                  'مصرف', 'کشور', 'خروجی', 'کیفیت', 'کاربرد', 'ارائه', 'کار', 'موجود', 'قطعه', 'سال','صنایع']
 
 
 def tokenize(df, columns):
