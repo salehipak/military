@@ -65,48 +65,6 @@ prd_url = 'https://raw.githubusercontent.com/salehipak/military/main/tokenized_p
 st.title('Technomart Matching Demo')
 st.markdown("<p style='font-size:18px;'>Maching demand and supply of Iran National Technomart.</p>", unsafe_allow_html=True)
 # st.text('Maching demand and supply of Iran National Technomart')
-input_file = st.radio(
-    "Do you have your own files?",
-    options=["Yes", "No"]
-    , index=1
-)
-if input_file == 'Yes':
-# Demmender or supplier
-    # st.divider()
-    st.write("Please download sample file below. Your file should have :red[***.xlsx***] format with the same columns.")
-    # Create a sample DataFrame
-    data = pd.DataFrame({
-        'id':[1]
-        , 'title':['دستگاه تولید بویه های صیادی']
-        ,'description':['بویه های صیادی یکی از ملزومات مهم صنعت صید کشور می باشد که...']
-        ,'key_words':[['ماهیگیری','صیادی']]
-    })
-    output = io.BytesIO()
-    writer = pd.ExcelWriter(output, engine="xlsxwriter")
-    data.to_excel(writer, index=False, sheet_name="sheet1")
-    writer.close()
-    data_bytes = output.getvalue()
-    st.download_button(label="Download Sample"
-                       ,mime='application/vnd.ms-excel'
-                       , file_name='sample.xlsx'
-                       ,data=data_bytes
-                       )
-    
-    st.write("Now upload your demand and Supply files.") 
-    upload_dmd = st.file_uploader(":red[***Demand***]")
-    if upload_dmd is not None:
-        uploaded_dmd_df = pd.read_excel(upload_dmd).sort_values('id')
-        uploaded_dmd_df.insert(loc=2,column='Identifier',value= ['Manual_DMD_' + str(_ + 1) for _ in range(len(uploaded_dmd_df))])
-        st.write(uploaded_dmd_df.head(5))
-        tokenized_uploaded_dmd_df = tokenize(uploaded_dmd_df, ['title', 'description', 'key_words'])
-    
-    upload_prd = st.file_uploader(":red[***Supply***]")
-    if upload_prd is not None:
-        uploaded_prd_df = pd.read_excel(upload_prd).sort_values('id')
-        uploaded_prd_df.insert(loc=2,column='Identifier',value= ['Manual_PRD_' + str(_ + 1) for _ in range(len(uploaded_prd_df))])
-        st.write(uploaded_prd_df.head(5))
-        tokenized_uploaded_prd_df = tokenize(uploaded_prd_df, ['title', 'description', 'key_words'])
-    st.divider()
 
 input_type = st.radio(
     "Are you supplier or demander?",
@@ -155,16 +113,50 @@ if button_id:
     # --------------------------------------------------------------------------------
     # Supplier
     if input_type == 'Supplier':
-        prd_df = pd.DataFrame({'prd_urlIdentifier': 'PRD--1', 'prd_title': [user_input_title], 'prd_description': [user_input_description], 'prd_key_words': str([user_input_keywords])
+        input_file = st.radio(
+    "Do you want to upload a file?",
+    options=["Yes", "No"]
+    , index=1
+)
+        if input_file == 'Yes':
+        # Demmender or supplier
+            # st.divider()
+            st.write("Please download sample file below. Your file should have :red[***.xlsx***] format with the same columns.")
+            # Create a sample DataFrame
+            data = pd.DataFrame({
+                'id':[1]
+                , 'title':['دستگاه تولید بویه های صیادی']
+                ,'description':['بویه های صیادی یکی از ملزومات مهم صنعت صید کشور می باشد که...']
+                ,'key_words':[['ماهیگیری','صیادی']]
+            })
+            output = io.BytesIO()
+            writer = pd.ExcelWriter(output, engine="xlsxwriter")
+            data.to_excel(writer, index=False, sheet_name="sheet1")
+            writer.close()
+            data_bytes = output.getvalue()
+            st.download_button(label="Download Sample"
+                               ,mime='application/vnd.ms-excel'
+                               , file_name='sample.xlsx'
+                               ,data=data_bytes
+                               )
+            
+            st.write("Now upload your Supply file.")
+            upload_prd = st.file_uploader(":red[***Supply***]")
+            if upload_prd is not None:
+                uploaded_prd_df = pd.read_excel(upload_prd).sort_values('id')
+                uploaded_prd_df.insert(loc=2,column='Identifier',value= ['Manual_PRD_' + str(_ + 1) for _ in range(len(uploaded_prd_df))])
+                st.write(uploaded_prd_df.head(5))
+                prd_df = upload_prd.rename(columns = {'id':'prd_id','title':'prd_title','urlIdentifier':'prd_urlIdentifier','description':'prd_description','key_words':'prd_key_words'})
+            else:
+                prd_df = pd.DataFrame({'prd_urlIdentifier': 'PRD--1', 'prd_title': [user_input_title], 'prd_description': [user_input_description], 'prd_key_words': str([user_input_keywords])
                                })
+                
         tokenized_prd_df = tokenize(
             prd_df, ['prd_title', 'prd_description', 'prd_key_words'])
         tokenized_dmd_df = pd.read_csv('tokenized_dmd_df.csv', converters={'tokenized_dmd_title': ast.literal_eval, 'tokenized_dmd_description': ast.literal_eval, 'tokenized_dmd_key_words': ast.literal_eval}
                                        )
-        if input_file == 'Yes' & upload_dmd is not None:
-            tokenized_uploaded_dmd_df.columns = tokenized_dmd_df.columns
-            tokenized_dmd_df = pd.concat((tokenized_dmd_df,tokenized_uploaded_dmd_df),axis=0)
-
+        st.divider()
+        
         if algo == 'LDA':
           tokenized_documents = (tokenized_dmd_df['tokenized_dmd_title'] + tokenized_dmd_df['tokenized_dmd_description'] + tokenized_dmd_df['tokenized_dmd_key_words']).tolist() + (tokenized_prd_df['tokenized_prd_title'] + tokenized_prd_df['tokenized_prd_description'] + tokenized_prd_df['tokenized_prd_key_words']).tolist() 
           dictionary = corpora.Dictionary(tokenized_documents)
@@ -253,14 +245,49 @@ if button_id:
             st.write(styled_df.to_html(escape=False, index=False),unsafe_allow_html=True, hide_index=True)
 #----------------------------------
     if input_file == 'Yes' & input_type == 'Supplier':
-        dmd_df = pd.DataFrame({'dmd_urlIdentifier': 'PRD--1', 'dmd_title': [user_input_title], 'dmd_description': [user_input_description], 'dmd_key_words': str([user_input_keywords])})
+        input_file = st.radio(
+    "Do you want to upload a file?",
+    options=["Yes", "No"]
+    , index=1
+)
+        if input_file == 'Yes':
+        # Demmender or supplier
+            # st.divider()
+            st.write("Please download sample file below. Your file should have :red[***.xlsx***] format with the same columns.")
+            # Create a sample DataFrame
+            data = pd.DataFrame({
+                'id':[1]
+                , 'title':['دستگاه تولید بویه های صیادی']
+                ,'description':['بویه های صیادی یکی از ملزومات مهم صنعت صید کشور می باشد که...']
+                ,'key_words':[['ماهیگیری','صیادی']]
+            })
+            output = io.BytesIO()
+            writer = pd.ExcelWriter(output, engine="xlsxwriter")
+            data.to_excel(writer, index=False, sheet_name="sheet1")
+            writer.close()
+            data_bytes = output.getvalue()
+            st.download_button(label="Download Sample"
+                               ,mime='application/vnd.ms-excel'
+                               , file_name='sample.xlsx'
+                               ,data=data_bytes
+                               )
+            
+            st.write("Now upload your demand file.") 
+            upload_dmd = st.file_uploader(":red[***Demand***]")
+            if upload_dmd is not None:
+                uploaded_dmd_df = pd.read_excel(upload_dmd).sort_values('id')
+                uploaded_dmd_df.insert(loc=2,column='Identifier',value= ['Manual_DMD_' + str(_ + 1) for _ in range(len(uploaded_dmd_df))])
+                st.write(uploaded_dmd_df.head(5))
+            else:
+                dmd_df = pd.DataFrame({'dmd_urlIdentifier': 'DMD--1', 'dmd_title': [user_input_title], 'dmd_description': [user_input_description], 'dmd_key_words': str([user_input_keywords])
+                               })
+                
         tokenized_dmd_df = tokenize(
             dmd_df, ['dmd_title', 'dmd_description', 'dmd_key_words'])
-        tokenized_prd_df = pd.read_csv('tokenized_prd_df.csv', converters={'tokenized_prd_title': ast.literal_eval, 'tokenized_prd_description': ast.literal_eval, 'tokenized_prd_key_words': ast.literal_eval}
+        tokenized_dmd_df = pd.read_csv('tokenized_dmd_df.csv', converters={'tokenized_dmd_title': ast.literal_eval, 'tokenized_dmd_description': ast.literal_eval, 'tokenized_dmd_key_words': ast.literal_eval}
                                        )
-        if upload_prd is not None:
-            tokenized_uploaded_prd_df.columns = tokenized_prd_df.columns
-            tokenized_prd_df = pd.concat((tokenized_prd_df,tokenized_uploaded_prd_df),axis=0)
+        st.divider()
+        
 
         if algo == 'LDA':
           tokenized_documents = (tokenized_prd_df['tokenized_prd_title'] + tokenized_prd_df['tokenized_prd_description'] + tokenized_prd_df['tokenized_prd_key_words']).tolist() + (tokenized_dmd_df['tokenized_dmd_title'] + tokenized_dmd_df['tokenized_dmd_description'] + tokenized_dmd_df['tokenized_dmd_key_words']).tolist() 
