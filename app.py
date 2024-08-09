@@ -105,6 +105,7 @@ if input_file == 'Yes':
     else:
         st.write("Please upload your demand file.")
         upload_dmd = st.file_uploader(":red[***Demand***]")
+        
 else: 
     # Input Title, Description and Keywords
     user_input_title = st.text_input(
@@ -118,6 +119,7 @@ else:
         value=keywords,
         key="tag_input",
     )
+ st.divider()
 # --------------------------------------------------------------------------------
 # Choose Algorithm, Number and Sort Type
 col1, col2, col3 = st.columns(3)
