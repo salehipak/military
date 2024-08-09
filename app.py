@@ -116,7 +116,7 @@ if input_file == 'Yes':
         uploaded_file = st.file_uploader(":red[***Supply***]")
         try:
             prd_df = pd.DataFrame(pd.read_excel(uploaded_file)).sort_values('prd_id')
-            prd_df.insert(loc=1,column='prd_urlIdentifier',value= ['Manual_PRD_' + str(_ + 1) for _ in range(len(uploaded_prd_df))])
+            prd_df.insert(loc=1,column='prd_urlIdentifier',value= ['Manual_PRD_' + str(_ + 1) for _ in range(len(prd_df))])
             tokenized_prd_df = tokenize(prd_df, ['prd_title', 'prd_description', 'prd_key_words'])
             prd_df.index +=1
             st.write(prd_df.head(5))
@@ -139,7 +139,7 @@ if input_file == 'Yes':
         uploaded_file = st.file_uploader(":red[***Demand***]")  
         try:
             dmd_df = pd.DataFrame(pd.read_excel(uploaded_file)).sort_values('dmd_id')
-            dmd_df.insert(loc=1,column='dmd_urlIdentifier',value= ['Manual_DMD_' + str(_ + 1) for _ in range(len(uploaded_dmd_df))])
+            dmd_df.insert(loc=1,column='dmd_urlIdentifier',value= ['Manual_DMD_' + str(_ + 1) for _ in range(len(dmd_df))])
             tokenized_dmd_df = tokenize(dmd_df, ['dmd_title', 'dmd_description', 'dmd_key_words'])
             dmd_df.index +=1
             st.write(dmd_df.head(5)) 
