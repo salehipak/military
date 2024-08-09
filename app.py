@@ -227,52 +227,62 @@ if button_id:
             if algo == 'Cosine Similarity':
                 most_similar_dmd_for_prd_df = pd.DataFrame({'prd': prd_df['prd_urlIdentifier']})
                 for c in ['title', 'description', 'key_words']:
-                    dmd_token = [' '.join(tokens) for tokens in tokenized_dmd_df['tokenized_dmd_' + str(c)]]
-                    prd_token = [' '.join(tokens) for tokens in tokenized_prd_df['tokenized_prd_' + str(c)]]
+                    dmd_token = [' '.join(tokens)
+                                 for tokens in tokenized_dmd_df['tokenized_dmd_' + str(c)]]
+                    prd_token = [' '.join(tokens)
+                                 for tokens in tokenized_prd_df['tokenized_prd_' + str(c)]]
                     tfidf_vectorizer = TfidfVectorizer()
+                    
                     all_token = dmd_token + prd_token
                     tfidf_matrix = tfidf_vectorizer.fit_transform(all_token)
-                    dmd_tfidf_matrix = tfidf_matrix[:len(tokenized_dmd_df)]
-                    prd_tfidf_matrix = tfidf_matrix[len(tokenized_dmd_df):]
-                    cos_similarity = cosine_similarity(prd_tfidf_matrix, dmd_tfidf_matrix)
-                    best_idx = np.argsort(cos_similarity, axis=1)[:, -item_number:]
-                    most_similar_dmd_for_prd = []
-                    for idx in range(best_idx.shape[0]):
-                        counter_list = [Counter(tokenized_dmd_df.iloc[best_idx[idx, _]]['tokenized_dmd_' + str(c)]) for _ in range(item_number)]
-                        most_similar_dmd_for_prd.append(
-                            [dict(max_counters(counter_list)), list(cos_similarity[idx, best_idx[idx]])])
-                        
-                st.write(most_similar_dmd_for_prd.head(5))
-
-            elif algo == 'Jaccard Similarity':
+                    similarity_matrix = cosine_similarity(tfidf_matrix[:len(dmd_token)], tfidf_matrix[len(dmd_token):])
+                    matching_results = pd.DataFrame(similarity_matrix, index=tokenized_dmd_df['dmd_urlIdentifier'], columns=tokenized_prd_df['prd_urlIdentifier'])
+                    
+                    most_similar_dmd_for_prd = {}
+                    for prd in prd_df['prd_urlIdentifier']:
+                        sorted_dmd = matching_results[prd].sort_values(ascending=False)
+                        # Exclude the prd herself
+                        most_similar_dmd = dict(sorted_dmd[:100])
+                        most_similar_dmd_for_prd[prd] = most_similar_dmd
+    
+                    most_similar_dmd_for_prd_df = pd.merge(most_similar_dmd_for_prd_df, pd.DataFrame(
+                    most_similar_dmd_for_prd.items(), columns=['prd', 'Most Similar dmd ' + str(c)]))
+                most_similar_dmd_for_prd_df['total'] = most_similar_dmd_for_prd_df.apply(lambda x: max_counters([Counter(dict(y)) for y in x.iloc[1:4]]), axis=1)
+                # most_similar_dmd_for_prd_df['total'] = most_similar_dmd_for_prd_df.apply(lambda x: dict(sum(map(Counter, x.iloc[1:4].apply(lambda y: dict(y))), start=Counter())), axis=1)
+    
+            elif algo == 'Jaccard Similarity':    
                 most_similar_dmd_for_prd_df = pd.DataFrame({'prd': prd_df['prd_urlIdentifier']})
                 for c in ['title', 'description', 'key_words']:
-                    prd_token = tokenized_prd_df['tokenized_prd_' + str(c)]
-                    jaccard_sim = []
-                    for i in range(len(prd_token)):
-                        prd_set = set(prd_token[i])
-                        similarities = []
-                        for j in range(len(tokenized_dmd_df)):
-                            dmd_set = set(tokenized_dmd_df['tokenized_dmd_' + str(c)][j])
-                            similarity = jaccard_similarity(prd_set, dmd_set)
-                            similarities.append(similarity)
-                        best_idx = np.argsort(similarities)[-item_number:]
-                        counter_list = [Counter(tokenized_dmd_df.iloc[best_idx[_]]['tokenized_dmd_' + str(c)]) for _ in range(item_number)]
-                        jaccard_sim.append([dict(max_counters(counter_list)), list(np.array(similarities)[best_idx])])
-                    most_similar_dmd_for_prd_df['most_similar_dmd_' + str(c)] = jaccard_sim
-                most_similar_dmd_for_prd_df.index += 1
-                # df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(lambda r: f'<a href="https://techmart.ir/demand/view/{r}">Link</a>'))
-                # styled_df = df.style.apply(gradient_color, subset=['Values'], axis=1)
-                # st.write(styled_df.to_html(escape=False, index=True),unsafe_allow_html=True)
-                st.write(most_similar_dmd_for_prd_df.head(5))
+                    dmd_token = [set(tokens) for tokens in tokenized_dmd_df['tokenized_dmd_' + str(c)]]
+                    prd_token = [set(tokens) for tokens in tokenized_prd_df['tokenized_prd_' + str(c)]]
+                    
+                    similarity_matrix = np.zeros((len(dmd_token), len(prd_token)))
+                    for i, dmd_tokens in enumerate(dmd_token):
+                        for j, prd_tokens in enumerate(prd_token):
+                            similarity_matrix[i, j] = jaccard_similarity(dmd_tokens, prd_tokens)
+                    matching_results = pd.DataFrame(similarity_matrix, index=tokenized_dmd_df['dmd_urlIdentifier'], columns=tokenized_prd_df['prd_urlIdentifier'])
+                    most_similar_dmd_for_prd = {}
+                    for prd in prd_df['prd_urlIdentifier']:
+                        sorted_dmd = matching_results[prd].sort_values(ascending=False)
+                        # Exclude the prd herself
+                        most_similar_dmd = dict(sorted_dmd[:100])
+                        most_similar_dmd_for_prd[prd] = most_similar_dmd
+    
+                    most_similar_dmd_for_prd_df = pd.merge(most_similar_dmd_for_prd_df, pd.DataFrame(
+                    most_similar_dmd_for_prd.items(), columns=['prd', 'Most Similar dmd ' + str(c)]))
+                most_similar_dmd_for_prd_df['total'] = most_similar_dmd_for_prd_df.apply(lambda x: max_counters([Counter(dict(y)) for y in x.iloc[1:4]]), axis=1)  
+                # most_similar_dmd_for_prd_df['total'] = most_similar_dmd_for_prd_df.apply(lambda x: dict(sum(map(Counter, x.iloc[1:4].apply(lambda y: dict(y))), start=Counter())), axis=1)
+              
+            df = pd.DataFrame(most_similar_dmd_for_prd_df['total'].tolist()[0].items(), columns=[
+                          'ID', 'Values']).sort_values('Values', ascending=False).iloc[:item_number, :].reset_index(drop=True)
+            df.Values = df.Values.round(2)
+            df = pd.merge(df, tokenized_dmd_df[['dmd_urlIdentifier', 'dmd_title',
+                                            'dmd_key_words']], left_on='ID', right_on='dmd_urlIdentifier').drop('dmd_urlIdentifier', axis=1).rename(columns={'dmd_title': 'Title', 'dmd_key_words': 'keywords'})
+            df.index += 1
+            df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(lambda r: f'<a href="https://techmart.ir/demand/view/{r}">Link</a>'))
 
-        most_similar_dmd_for_prd_df.to_csv("final_output.csv", index=False)
-        st.download_button(
-            label="Download Result",
-            data="final_output.csv",
-            file_name="final_output.csv",
-            mime="text/csv"
-        )
+            styled_df = df.style.apply(gradient_color, subset=['Values'], axis=1)
+            st.write(styled_df.to_html(escape=False, index=True),unsafe_allow_html=True)
 #----------------------------------
 # Demander
     if input_type == 'Demander':
