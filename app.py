@@ -161,7 +161,7 @@ if button_id:
             prd_df, ['prd_title', 'prd_description', 'prd_key_words'])
         tokenized_dmd_df = pd.read_csv('tokenized_dmd_df.csv', converters={'tokenized_dmd_title': ast.literal_eval, 'tokenized_dmd_description': ast.literal_eval, 'tokenized_dmd_key_words': ast.literal_eval}
                                        )
-        if upload_dmd is not None:
+        if input_file == 'Yes' & upload_dmd is not None:
             tokenized_uploaded_dmd_df.columns = tokenized_dmd_df.columns
             tokenized_dmd_df = pd.concat((tokenized_dmd_df,tokenized_uploaded_dmd_df),axis=0)
 
@@ -252,7 +252,7 @@ if button_id:
             styled_df = df.style.apply(gradient_color, subset=['Values'], axis=1)
             st.write(styled_df.to_html(escape=False, index=False),unsafe_allow_html=True, hide_index=True)
 #----------------------------------
-    if input_type == 'Supplier':
+    if input_file == 'Yes' & input_type == 'Supplier':
         dmd_df = pd.DataFrame({'dmd_urlIdentifier': 'PRD--1', 'dmd_title': [user_input_title], 'dmd_description': [user_input_description], 'dmd_key_words': str([user_input_keywords])})
         tokenized_dmd_df = tokenize(
             dmd_df, ['dmd_title', 'dmd_description', 'dmd_key_words'])
