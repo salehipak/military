@@ -263,9 +263,8 @@ if button_id:
                     most_similar_dmd_for_prd_df['most_similar_dmd_' + str(c)] = jaccard_sim
                 most_similar_dmd_for_prd_df.index += 1
                 # df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(lambda r: f'<a href="https://techmart.ir/demand/view/{r}">Link</a>'))
-
-            styled_df = df.style.apply(gradient_color, subset=['Values'], axis=1)
-            st.write(styled_df.to_html(escape=False, index=True),unsafe_allow_html=True)
+                # styled_df = df.style.apply(gradient_color, subset=['Values'], axis=1)
+                # st.write(styled_df.to_html(escape=False, index=True),unsafe_allow_html=True)
                 st.write(most_similar_dmd_for_prd_df.head(5))
 
         most_similar_dmd_for_prd_df.to_csv("final_output.csv", index=False)
