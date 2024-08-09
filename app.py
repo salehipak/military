@@ -355,7 +355,7 @@ if button_id:
             df = pd.merge(df, tokenized_prd_df[['prd_urlIdentifier', 'prd_title',
                                             'prd_key_words']], left_on='ID', right_on='prd_urlIdentifier').drop('prd_urlIdentifier', axis=1).rename(columns={'prd_title': 'Title', 'prd_key_words': 'keywords'})
         
-            df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(lambda r: f'<a href="https://techmart.ir/demand/view/{r}">Link</a>'))
+            df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(lambda r: f'<a href="https://techmart.ir/product/view/{r}">Link</a>'))
 
             styled_df = df.style.apply(gradient_color, subset=['Values'], axis=1)
             st.write(styled_df.to_html(escape=False, index=False),unsafe_allow_html=True, hide_index=True)
