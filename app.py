@@ -112,18 +112,21 @@ if input_file == 'Yes':
     if input_type == 'Supplier':
         st.write("Please upload your Supply file.")
         uploaded_file = st.file_uploader(":red[***Supply***]")
-        if uploaded_file is not None:
+        try:
             uploaded_prd_df = pd.read_excel('uploaded_file').sort_values('id')
             uploaded_prd_df.insert(loc=2,column='Identifier',value= ['Manual_PRD_' + str(_ + 1) for _ in range(len(uploaded_prd_df))])
             st.write(uploaded_prd_df.head(5))
+        except Exception:
+            print('you have not uploded your supply file)
     else:
         st.write("Please upload your demand file.")
         uploaded_file = st.file_uploader(":red[***Demand***]")  
-        if uploaded_file is not None:
+        try:
             uploaded_dmd_df = pd.read_excel('uploaded_file').sort_values('id')
             uploaded_dmd_df.insert(loc=2,column='Identifier',value= ['Manual_DMD_' + str(_ + 1) for _ in range(len(uploaded_dmd_df))])
             st.write(uploaded_dmd_df.head(5))
-        
+        except Exception:
+            print('you have not uploded your demand file)
 else: 
     # Input Title, Description and Keywords
     user_input_title = st.text_input(
