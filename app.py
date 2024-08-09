@@ -214,7 +214,7 @@ if button_id:
                     most_similar_dmd_for_prd_df = pd.merge(most_similar_dmd_for_prd_df, pd.DataFrame(
                     most_similar_dmd_for_prd.items(), columns=['prd', 'Most Similar dmd ' + str(c)]))
                     
-                most_similar_dmd_for_prd_df['total'] = most_similar_dmd_for_prd_df.apply(lambda x: dict(mean(map(Counter, x.iloc[1:4].apply(lambda y: dict(y))), start=Counter())), axis=1)
+                most_similar_dmd_for_prd_df['total'] = most_similar_dmd_for_prd_df.apply(lambda x: dict(sum(map(Counter, x.iloc[1:4].apply(lambda y: dict(y))), start=Counter())), axis=1)/3
     
             elif algo == 'Jaccard Similarity':    
                 most_similar_dmd_for_prd_df = pd.DataFrame({'prd': prd_df['prd_urlIdentifier']})
@@ -237,7 +237,7 @@ if button_id:
                     most_similar_dmd_for_prd_df = pd.merge(most_similar_dmd_for_prd_df, pd.DataFrame(
                     most_similar_dmd_for_prd.items(), columns=['prd', 'Most Similar dmd ' + str(c)]))
                     
-                most_similar_dmd_for_prd_df['total'] = most_similar_dmd_for_prd_df.apply(lambda x: dict(mean(map(Counter, x.iloc[1:4].apply(lambda y: dict(y))), start=Counter())), axis=1)
+                most_similar_dmd_for_prd_df['total'] = most_similar_dmd_for_prd_df.apply(lambda x: dict(sum(map(Counter, x.iloc[1:4].apply(lambda y: dict(y))), start=Counter())), axis=1)/3
               
             df = pd.DataFrame(most_similar_dmd_for_prd_df['total'].tolist()[0].items(), columns=[
                           'ID', 'Values']).sort_values('Values', ascending=False).reset_index(drop=True).iloc[:item_number, :]
@@ -316,7 +316,7 @@ if button_id:
                     most_similar_prd_for_dmd_df = pd.merge(most_similar_prd_for_dmd_df, pd.DataFrame(
                     most_similar_prd_for_dmd.items(), columns=['dmd', 'Most Similar prd ' + str(c)]))
                     
-                most_similar_prd_for_dmd_df['total'] = most_similar_prd_for_dmd_df.apply(lambda x: dict(mean(map(Counter, x.iloc[1:4].apply(lambda y: dict(y))), start=Counter())), axis=1)
+                most_similar_prd_for_dmd_df['total'] = most_similar_prd_for_dmd_df.apply(lambda x: dict(sum(map(Counter, x.iloc[1:4].apply(lambda y: dict(y))), start=Counter())), axis=1)/3
     
             elif algo == 'Jaccard Similarity':    
                 most_similar_prd_for_dmd_df = pd.DataFrame({'dmd': dmd_df['dmd_urlIdentifier']})
@@ -339,7 +339,7 @@ if button_id:
                     most_similar_prd_for_dmd_df = pd.merge(most_similar_prd_for_dmd_df, pd.DataFrame(
                     most_similar_prd_for_dmd.items(), columns=['dmd', 'Most Similar prd ' + str(c)]))
                     
-                most_similar_prd_for_dmd_df['total'] = most_similar_prd_for_dmd_df.apply(lambda x: dict(mean(map(Counter, x.iloc[1:4].apply(lambda y: dict(y))), start=Counter())), axis=1)
+                most_similar_prd_for_dmd_df['total'] = most_similar_prd_for_dmd_df.apply(lambda x: dict(sum(map(Counter, x.iloc[1:4].apply(lambda y: dict(y))), start=Counter())), axis=1)/3
               
             df = pd.DataFrame(most_similar_prd_for_dmd_df['total'].tolist()[0].items(), columns=[
                           'ID', 'Values']).sort_values('Values', ascending=False).reset_index(drop=True).iloc[:item_number, :]
