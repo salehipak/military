@@ -83,8 +83,6 @@ sample_data = pd.DataFrame({
             ,'key_words':[['ماهیگیری','صیادی']]
         })
 
-upload_prd = None
-upload_dmd = None
 if input_file == 'Yes':
 # Demmender or supplier
     # st.divider()
@@ -151,7 +149,7 @@ if button_id:
     # --------------------------------------------------------------------------------
     # Supplier
     if input_type == 'Supplier':
-        if upload_prd is not None:
+        if len(upload_prd) > 0:
             uploaded_prd_df = pd.read_excel(upload_prd).sort_values('id')
             uploaded_prd_df.insert(loc=2,column='Identifier',value= ['Manual_PRD_' + str(_ + 1) for _ in range(len(uploaded_prd_df))])
             st.write(uploaded_prd_df.head(5))
@@ -255,7 +253,7 @@ if button_id:
 #----------------------------------
 # Demander
     if input_type == 'Demander':
-        if upload_dmd is not None:
+        if len(upload_dmd) > 0:
             uploaded_dmd_df = pd.read_excel(upload_dmd).sort_values('id')
             uploaded_dmd_df.insert(loc=2,column='Identifier',value= ['Manual_DMD_' + str(_ + 1) for _ in range(len(uploaded_dmd_df))])
             st.write(uploaded_dmd_df.head(5))
