@@ -118,8 +118,8 @@ if input_file == 'Yes':
             st.write(uploaded_prd_df.head(5))
     else:
         st.write("Please upload your demand file.")
+        uploaded_file = st.file_uploader(":red[***Demand***]")  
         if uploaded_file is not None:
-            uploaded_file = st.file_uploader(":red[***Demand***]")  
             uploaded_dmd_df = pd.read_excel('uploaded_file').sort_values('id')
             uploaded_dmd_df.insert(loc=2,column='Identifier',value= ['Manual_DMD_' + str(_ + 1) for _ in range(len(uploaded_dmd_df))])
             st.write(uploaded_dmd_df.head(5))
