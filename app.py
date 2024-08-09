@@ -150,11 +150,11 @@ if button_id:
     # Supplier
     if input_type == 'Supplier':
          try:
-            uploaded_prd_df = pd.read_excel(upload_prd).sort_values('id')
-            uploaded_prd_df.insert(loc=2,column='Identifier',value= ['Manual_PRD_' + str(_ + 1) for _ in range(len(uploaded_prd_df))])
-            st.write(uploaded_prd_df.head(5))
-            prd_df = upload_prd.rename(columns = {'id':'prd_id','title':'prd_title','urlIdentifier':'prd_urlIdentifier','description':'prd_description','key_words':'prd_key_words'})
-        except:
+             uploaded_prd_df = pd.read_excel(upload_prd).sort_values('id')
+             uploaded_prd_df.insert(loc=2,column='Identifier',value= ['Manual_PRD_' + str(_ + 1) for _ in range(len(uploaded_prd_df))])
+             st.write(uploaded_prd_df.head(5))
+             prd_df = upload_prd.rename(columns = {'id':'prd_id','title':'prd_title','urlIdentifier':'prd_urlIdentifier','description':'prd_description','key_words':'prd_key_words'})
+        except ValueError:
             prd_df = pd.DataFrame({'prd_urlIdentifier': 'PRD--1', 'prd_title': [user_input_title], 'prd_description': [user_input_description], 'prd_key_words': str([user_input_keywords])
                            })
             
@@ -257,7 +257,7 @@ if button_id:
             uploaded_dmd_df = pd.read_excel(upload_dmd).sort_values('id')
             uploaded_dmd_df.insert(loc=2,column='Identifier',value= ['Manual_DMD_' + str(_ + 1) for _ in range(len(uploaded_dmd_df))])
             st.write(uploaded_dmd_df.head(5))
-        except:
+        except ValueError:
             dmd_df = pd.DataFrame({'dmd_urlIdentifier': 'DMD--1', 'dmd_title': [user_input_title], 'dmd_description': [user_input_description], 'dmd_key_words': str([user_input_keywords])
                            })           
         tokenized_dmd_df = tokenize(
