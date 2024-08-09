@@ -115,11 +115,11 @@ if input_file == 'Yes':
         st.write("Please upload your Supply file.")
         uploaded_file = st.file_uploader(":red[***Supply***]")
         try:
-            uploaded_prd_df = pd.DataFrame(pd.read_excel(uploaded_file)).sort_values('prd_id')
-            uploaded_prd_df.insert(loc=1,column='prd_urlIdentifier',value= ['Manual_PRD_' + str(_ + 1) for _ in range(len(uploaded_prd_df))])
-            tokenized_prd_df = tokenize(uploaded_prd_df, ['prd_title', 'prd_description', 'prd_key_words'])
-            uploaded_prd_df.index +=1
-            st.write(uploaded_prd_df.head(5))
+            prd_df = pd.DataFrame(pd.read_excel(uploaded_file)).sort_values('prd_id')
+            prd_df.insert(loc=1,column='prd_urlIdentifier',value= ['Manual_PRD_' + str(_ + 1) for _ in range(len(uploaded_prd_df))])
+            tokenized_prd_df = tokenize(prd_df, ['prd_title', 'prd_description', 'prd_key_words'])
+            prd_df.index +=1
+            st.write(prd_df.head(5))
         except ValueError as err:
             print("Error")
                
@@ -138,11 +138,11 @@ if input_file == 'Yes':
         st.write("Please upload your demand file.")
         uploaded_file = st.file_uploader(":red[***Demand***]")  
         try:
-            uploaded_dmd_df = pd.DataFrame(pd.read_excel(uploaded_file)).sort_values('dmd_id')
-            uploaded_dmd_df.insert(loc=1,column='dmd_urlIdentifier',value= ['Manual_DMD_' + str(_ + 1) for _ in range(len(uploaded_dmd_df))])
-            tokenized_dmd_df = tokenize(uploaded_dmd_df, ['dmd_title', 'dmd_description', 'dmd_key_words'])
-            uploaded_dmd_df.index +=1
-            st.write(uploaded_dmd_df.head(5)) 
+            dmd_df = pd.DataFrame(pd.read_excel(uploaded_file)).sort_values('dmd_id')
+            dmd_df.insert(loc=1,column='dmd_urlIdentifier',value= ['Manual_DMD_' + str(_ + 1) for _ in range(len(uploaded_dmd_df))])
+            tokenized_dmd_df = tokenize(dmd_df, ['dmd_title', 'dmd_description', 'dmd_key_words'])
+            dmd_df.index +=1
+            st.write(dmd_df.head(5)) 
         except ValueError as err:
             print("Error")
 else: 
