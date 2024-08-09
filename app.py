@@ -31,7 +31,7 @@ def jaccard_similarity(set1, set2):
     try:
         return intersection / union
     except ZeroDivisionError:
-        return 0
+        return None
 
 def gradient_color(val):
     # Convert the value to a color between red (0) and green (1)
