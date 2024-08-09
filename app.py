@@ -125,7 +125,7 @@ if input_file == 'Yes':
         try:
             uploaded_dmd_df = pd.read_excel(uploaded_file).sort_values('id')
             uploaded_dmd_df.insert(loc=2,column='Identifier',value= ['Manual_DMD_' + str(_ + 1) for _ in range(len(uploaded_dmd_df))])
-            uploaded_prd_df.index +=1
+            uploaded_dmd_df.index +=1
             st.write(uploaded_dmd_df.head(5))
         except Exception:
             print('you have not uploded your demand file')
