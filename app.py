@@ -113,7 +113,7 @@ if input_file == 'Yes':
         st.write("Please upload your Supply file.")
         uploaded_file = st.file_uploader(":red[***Supply***]")
         try:
-            uploaded_prd_df = pd.read_excel('uploaded_file').sort_values('id')
+            uploaded_prd_df = pd.read_excel(uploaded_file).sort_values('id')
             uploaded_prd_df.insert(loc=2,column='Identifier',value= ['Manual_PRD_' + str(_ + 1) for _ in range(len(uploaded_prd_df))])
             st.write(uploaded_prd_df.head(5))
         except Exception:
@@ -122,7 +122,7 @@ if input_file == 'Yes':
         st.write("Please upload your demand file.")
         uploaded_file = st.file_uploader(":red[***Demand***]")  
         try:
-            uploaded_dmd_df = pd.read_excel('uploaded_file').sort_values('id')
+            uploaded_dmd_df = pd.read_excel(uploaded_file).sort_values('id')
             uploaded_dmd_df.insert(loc=2,column='Identifier',value= ['Manual_DMD_' + str(_ + 1) for _ in range(len(uploaded_dmd_df))])
             st.write(uploaded_dmd_df.head(5))
         except Exception:
