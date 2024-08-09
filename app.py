@@ -244,7 +244,7 @@ if button_id:
             styled_df = df.style.apply(gradient_color, subset=['Values'], axis=1)
             st.write(styled_df.to_html(escape=False, index=False),unsafe_allow_html=True, hide_index=True)
 #----------------------------------
-    if input_file == 'Yes' & input_type == 'Supplier':
+    if input_file == 'Yes':
         input_file = st.radio(
     "Do you want to upload a file?",
     options=["Yes", "No"]
