@@ -241,7 +241,11 @@ if button_id:
                         counter_list = [Counter(tokenized_dmd_df.iloc[best_idx[idx, _]]['tokenized_dmd_' + str(c)]) for _ in range(item_number)]
                         most_similar_dmd_for_prd.append(
                             [dict(max_counters(counter_list)), list(cos_similarity[idx, best_idx[idx]])])
-                    most_similar_dmd_for_prd_df['most_similar_dmd_' + str(c)] = most_similar_dmd_for_prd
+            
+                    # Convert lists to strings to avoid the ArrowInvalid error
+                    most_similar_dmd_for_prd_str = [str(item) for item in most_similar_dmd_for_prd]
+                    most_similar_dmd_for_prd_df['most_similar_dmd_' + str(c)] = most_similar_dmd_for_prd_str
+                    
                 most_similar_dmd_for_prd_df.index += 1
                 st.write(most_similar_dmd_for_prd_df.head(5))
 
