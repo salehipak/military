@@ -119,8 +119,6 @@ if input_file == 'Yes':
             uploaded_prd_df.insert(loc=2,column='prd_Identifier',value= ['Manual_PRD_' + str(_ + 1) for _ in range(len(uploaded_prd_df))])
             uploaded_prd_df.index +=1
             st.write(uploaded_prd_df.head(5))
-            uploaded_prd_df.to_csv('uploaded_prd_df.csv')
-            uploaded_prd_df = pd.read_csv('uploaded_prd_df.csv', converters={'prd_title': ast.literal_eval, 'prd_description': ast.literal_eval, 'prd_key_words': ast.literal_eval})
             tokenized_prd_df = tokenize(uploaded_prd_df, ['prd_title', 'prd_description', 'prd_key_words'])
         except ValueError as err:
             print("Error")
@@ -144,8 +142,6 @@ if input_file == 'Yes':
             uploaded_dmd_df.insert(loc=2,column='dmd_Identifier',value= ['Manual_DMD_' + str(_ + 1) for _ in range(len(uploaded_dmd_df))])
             uploaded_dmd_df.index +=1
             st.write(uploaded_dmd_df.head(5)) 
-            uploaded_dmd_df.to_csv('uploaded_dmd_df.csv')
-            uploaded_dmd_df = pd.read_csv('uploaded_dmd_df.csv', converters={'dmd_title': ast.literal_eval, 'dmd_description': ast.literal_eval, 'dmd_key_words': ast.literal_eval})
             tokenized_dmd_df = tokenize(uploaded_dmd_df, ['dmd_title', 'dmd_description', 'dmd_key_words'])
         except ValueError as err:
             print("Error")
