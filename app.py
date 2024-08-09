@@ -117,7 +117,7 @@ if input_file == 'Yes':
             uploaded_prd_df.insert(loc=2,column='Identifier',value= ['Manual_PRD_' + str(_ + 1) for _ in range(len(uploaded_prd_df))])
             st.write(uploaded_prd_df.head(5))
         except Exception:
-            print('you have not uploded your supply file)
+            print('you have not uploded your supply file')
     else:
         st.write("Please upload your demand file.")
         uploaded_file = st.file_uploader(":red[***Demand***]")  
@@ -126,7 +126,7 @@ if input_file == 'Yes':
             uploaded_dmd_df.insert(loc=2,column='Identifier',value= ['Manual_DMD_' + str(_ + 1) for _ in range(len(uploaded_dmd_df))])
             st.write(uploaded_dmd_df.head(5))
         except Exception:
-            print('you have not uploded your demand file)
+            print('you have not uploded your demand file')
 else: 
     # Input Title, Description and Keywords
     user_input_title = st.text_input(
