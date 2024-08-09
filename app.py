@@ -250,7 +250,7 @@ if button_id:
                 # most_similar_dmd_for_prd_df['total'] = most_similar_dmd_for_prd_df.apply(lambda x: dict(sum(map(Counter, x.iloc[1:4].apply(lambda y: dict(y))), start=Counter())), axis=1)
               
             df = pd.DataFrame(most_similar_dmd_for_prd_df['total'].tolist()[0].items(), columns=[
-                          'ID', 'Values']).sort_values('Values', ascending=False).reset_index(drop=True).iloc[:item_number, :]
+                          'ID', 'Values']).sort_values('Values', ascending=False).iloc[:item_number, :].reset_index(drop=True)
             df.index += 1
             df.Values = df.Values.round(2)
             df = pd.merge(df, tokenized_dmd_df[['dmd_urlIdentifier', 'dmd_title',
@@ -352,7 +352,7 @@ if button_id:
                 # most_similar_prd_for_dmd_df['total'] = most_similar_prd_for_dmd_df.apply(lambda x: dict(sum(map(Counter, x.iloc[1:4].apply(lambda y: dict(y))), start=Counter())), axis=1)
                 most_similar_prd_for_dmd_df['total'] = most_similar_prd_for_dmd_df.apply(lambda x: max_counters([Counter(dict(y)) for y in x.iloc[1:4]]), axis=1)
             df = pd.DataFrame(most_similar_prd_for_dmd_df['total'].tolist()[0].items(), columns=[
-                          'ID', 'Values']).sort_values('Values', ascending=False).reset_index(drop=True).iloc[:item_number, :]
+                          'ID', 'Values']).sort_values('Values', ascending=False).iloc[:item_number, :].reset_index(drop=True)
             df.index += 1
             df.Values = df.Values.round(2)
             df = pd.merge(df, tokenized_prd_df[['prd_urlIdentifier', 'prd_title',
