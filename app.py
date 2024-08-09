@@ -86,19 +86,22 @@ input_file = st.radio(
     options=["Yes", "No"]
     , index=1
 )
-sample_data = pd.DataFrame({
-            'id':[1]
-            , 'title':['دستگاه تولید بویه های صیادی']
-            ,'description':['بویه های صیادی یکی از ملزومات مهم صنعت صید کشور می باشد که...']
-            ,'key_words':[['ماهیگیری','صیادی']]
+dmd_sample_data = pd.DataFrame({
+            'dmd_id':[1]
+            , 'dmd_title':['دستگاه تولید بویه های صیادی']
+            ,'dmd_description':['بویه های صیادی یکی از ملزومات مهم صنعت صید کشور می باشد که...']
+            ,'dmd_key_words':[['ماهیگیری','صیادی']]
         })
-
+prd_sample_data = pd.DataFrame({
+            'prd_id':[1]
+            , 'prd_title':['دستگاه تولید بویه های صیادی']
+            ,'prd_description':['بویه های صیادی یکی از ملزومات مهم صنعت صید کشور می باشد که...']
+            ,'prd_key_words':[['ماهیگیری','صیادی']]
+        })
 if input_file == 'Yes':
-# Demmender or supplier
-    # st.divider()
+    if input_type == 'Supplier':
     st.write("Please download sample file below. Your file should have :red[***.xlsx***] format with the same columns.")
-    # Create a sample DataFrame
-    data = sample_data
+    data = prd_sample_data
     output = io.BytesIO()
     writer = pd.ExcelWriter(output, engine="xlsxwriter")
     data.to_excel(writer, index=False, sheet_name="sheet1")
@@ -106,29 +109,41 @@ if input_file == 'Yes':
     data_bytes = output.getvalue()
     st.download_button(label="Download Sample"
                        ,mime='application/vnd.ms-excel'
-                       , file_name='sample.xlsx'
+                       , file_name='prd_sample.xlsx'
                        ,data=data_bytes
                        )
-    if input_type == 'Supplier':
         st.write("Please upload your Supply file.")
         uploaded_file = st.file_uploader(":red[***Supply***]")
-        try:
-            uploaded_prd_df = pd.read_excel(uploaded_file).sort_values('id')
-            uploaded_prd_df.insert(loc=2,column='Identifier',value= ['Manual_PRD_' + str(_ + 1) for _ in range(len(uploaded_prd_df))])
-            uploaded_prd_df.index +=1
-            st.write(uploaded_prd_df.head(5))
-        except Exception:
-            print('you have not uploded your supply file')
+        uploaded_prd_df = pd.read_excel(uploaded_file).sort_values('id')
+        uploaded_prd_df.insert(loc=2,column='prd_Identifier',value= ['Manual_PRD_' + str(_ + 1) for _ in range(len(uploaded_prd_df))])
+        uploaded_prd_df.index +=1
+        st.write(uploaded_prd_df.head(5))
+        
+        tokenized_prd_df = tokenize(uploaded_prd_df, ['prd_title', 'prd_description', 'prd_key_words'])
+       
+        
     else:
+        st.write("Please download sample file below. Your file should have :red[***.xlsx***] format with the same columns.")
+        data = dmd_sample_data
+        output = io.BytesIO()
+        writer = pd.ExcelWriter(output, engine="xlsxwriter")
+        data.to_excel(writer, index=False, sheet_name="sheet1")
+        writer.close()
+        data_bytes = output.getvalue()
+        st.download_button(label="Download Sample"
+                           ,mime='application/vnd.ms-excel'
+                           , file_name='dmd_sample.xlsx'
+                           ,data=data_bytes
+                           )
         st.write("Please upload your demand file.")
         uploaded_file = st.file_uploader(":red[***Demand***]")  
-        try:
-            uploaded_dmd_df = pd.read_excel(uploaded_file).sort_values('id')
-            uploaded_dmd_df.insert(loc=2,column='Identifier',value= ['Manual_DMD_' + str(_ + 1) for _ in range(len(uploaded_dmd_df))])
-            uploaded_dmd_df.index +=1
-            st.write(uploaded_dmd_df.head(5))
-        except Exception:
-            print('you have not uploded your demand file')
+        uploaded_dmd_df = pd.read_excel(uploaded_file).sort_values('id')
+        uploaded_dmd_df.insert(loc=2,column='dmd_Identifier',value= ['Manual_DMD_' + str(_ + 1) for _ in range(len(uploaded_dmd_df))])
+        uploaded_dmd_df.index +=1
+        st.write(uploaded_dmd_df.head(5))
+        
+        tokenized_dmd_df = tokenize(uploaded_dmd_df, ['dmd_title', 'dmd_description', 'dmd_key_words'])
+
 else: 
     # Input Title, Description and Keywords
     user_input_title = st.text_input(
@@ -142,6 +157,14 @@ else:
         value=keywords,
         key="tag_input",
     )
+    if input_type == 'Supplier':
+        prd_df = pd.DataFrame({'prd_id': 1,'prd_urlIdentifier': 'PRD--1', 'prd_title': [user_input_title], 'prd_description': [user_input_description], 'prd_key_words': str([user_input_keywords])
+                               })
+        tokenized_prd_df = tokenize(prd_df, ['prd_title', 'prd_description', 'prd_key_words'])
+    else:
+        dmd_df = pd.DataFrame({'dmd_id':1,'dmd_urlIdentifier': 'DMD--1', 'dmd_title': [user_input_title], 'dmd_description': [user_input_description], 'dmd_key_words': str([user_input_keywords])
+                           })   
+        tokenized_dmd_df = tokenize(dmd_df, ['dmd_title', 'dmd_description', 'dmd_key_words'])
 # --------------------------------------------------------------------------------
 # Choose Algorithm, Number and Sort Type
 st.divider()
@@ -174,17 +197,6 @@ if button_id:
     # Supplier
     if input_type == 'Supplier':
         tokenized_dmd_df = pd.read_csv('tokenized_dmd_df.csv', converters={'tokenized_dmd_title': ast.literal_eval, 'tokenized_dmd_description': ast.literal_eval, 'tokenized_dmd_key_words': ast.literal_eval})
-        if input_file == 'Yes':
-            try:
-                prd_df = uploaded_prd_df.rename(columns = {'id':'prd_id','title':'prd_title','urlIdentifier':'prd_urlIdentifier','description':'prd_description','key_words':'prd_key_words'})
-            except ValueError:
-                print('You have not uploded a file')
-        else:
-            prd_df = pd.DataFrame({'prd_id': 1,'prd_urlIdentifier': 'PRD--1', 'prd_title': [user_input_title], 'prd_description': [user_input_description], 'prd_key_words': str([user_input_keywords])
-                               })         
-        tokenized_prd_df = tokenize(prd_df, ['prd_title', 'prd_description', 'prd_key_words'])
-        st.divider()
-        
         if algo == 'LDA':
           tokenized_documents = (tokenized_dmd_df['tokenized_dmd_title'] + tokenized_dmd_df['tokenized_dmd_description'] + tokenized_dmd_df['tokenized_dmd_key_words']).tolist() + (tokenized_prd_df['tokenized_prd_title'] + tokenized_prd_df['tokenized_prd_description'] + tokenized_prd_df['tokenized_prd_key_words']).tolist() 
           dictionary = corpora.Dictionary(tokenized_documents)
@@ -274,18 +286,6 @@ if button_id:
 # Demander
     if input_type == 'Demander':
         tokenized_prd_df = pd.read_csv('tokenized_prd_df.csv', converters={'tokenized_prd_title': ast.literal_eval, 'tokenized_prd_description': ast.literal_eval, 'tokenized_prd_key_words': ast.literal_eval})
-        if input_file == 'Yes':
-            try:
-                dmd_df = uploaded_dmd_df.rename(columns = {'id':'dmd_id','title':'dmd_title','urlIdentifier':'dmd_urlIdentifier','description':'dmd_description','key_words':'dmd_key_words'})
-            except ValueError:
-                print('You have not uploded a file')
-        else:
-            dmd_df = pd.DataFrame({'dmd_id':1,'dmd_urlIdentifier': 'DMD--1', 'dmd_title': [user_input_title], 'dmd_description': [user_input_description], 'dmd_key_words': str([user_input_keywords])
-                           })   
-        tokenized_dmd_df = tokenize(
-            dmd_df, ['dmd_title', 'dmd_description', 'dmd_key_words'])
-        st.divider()
-    
         if algo == 'LDA':
           tokenized_documents = (tokenized_prd_df['tokenized_prd_title'] + tokenized_prd_df['tokenized_prd_description'] + tokenized_prd_df['tokenized_prd_key_words']).tolist() + (tokenized_dmd_df['tokenized_dmd_title'] + tokenized_dmd_df['tokenized_dmd_description'] + tokenized_dmd_df['tokenized_dmd_key_words']).tolist() 
           dictionary = corpora.Dictionary(tokenized_documents)
