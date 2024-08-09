@@ -174,9 +174,9 @@ if button_id:
     # Supplier
     if input_type == 'Supplier':
         try:
-            prd_df = upload_prd_df.rename(columns = {'id':'prd_id','title':'prd_title','urlIdentifier':'prd_urlIdentifier','description':'prd_description','key_words':'prd_key_words'})
+            prd_df = uploaded_prd_df.rename(columns = {'id':'prd_id','title':'prd_title','urlIdentifier':'prd_urlIdentifier','description':'prd_description','key_words':'prd_key_words'})
         except Exception:
-            prd_df = pd.DataFrame({'prd_urlIdentifier': 'PRD--1', 'prd_title': [user_input_title], 'prd_description': [user_input_description], 'prd_key_words': str([user_input_keywords])
+            prd_df = pd.DataFrame({'prd_id' = 1,'prd_urlIdentifier': 'PRD--1', 'prd_title': [user_input_title], 'prd_description': [user_input_description], 'prd_key_words': str([user_input_keywords])
                            })
             
         tokenized_prd_df = tokenize(
@@ -274,9 +274,9 @@ if button_id:
 # Demander
     if input_type == 'Demander':
         try:
-            dmd_df = upload_dmd_df.rename(columns = {'id':'dmd_id','title':'dmd_title','urlIdentifier':'dmd_urlIdentifier','description':'dmd_description','key_words':'dmd_key_words'})
+            dmd_df = uploaded_dmd_df.rename(columns = {'id':'dmd_id','title':'dmd_title','urlIdentifier':'dmd_urlIdentifier','description':'dmd_description','key_words':'dmd_key_words'})
         except Exception:
-            dmd_df = pd.DataFrame({'dmd_urlIdentifier': 'DMD--1', 'dmd_title': [user_input_title], 'dmd_description': [user_input_description], 'dmd_key_words': str([user_input_keywords])
+            dmd_df = pd.DataFrame({'dmd_id':1,'dmd_urlIdentifier': 'DMD--1', 'dmd_title': [user_input_title], 'dmd_description': [user_input_description], 'dmd_key_words': str([user_input_keywords])
                            })           
         tokenized_dmd_df = tokenize(
             dmd_df, ['dmd_title', 'dmd_description', 'dmd_key_words'])
