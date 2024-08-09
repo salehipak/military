@@ -241,8 +241,7 @@ if button_id:
                         counter_list = [Counter(tokenized_dmd_df.iloc[best_idx[idx, _]]['tokenized_dmd_' + str(c)]) for _ in range(item_number)]
                         most_similar_dmd_for_prd.append(
                             [dict(max_counters(counter_list)), list(cos_similarity[idx, best_idx[idx]])])
-                    
-                most_similar_dmd_for_prd.index += 1
+                        
                 st.write(most_similar_dmd_for_prd.head(5))
 
             elif algo == 'Jaccard Similarity':
