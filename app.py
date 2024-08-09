@@ -111,14 +111,14 @@ if input_file == 'Yes':
                        )
     if input_type == 'Supplier':
         st.write("Please upload your Supply file.")
-        uploaded_prd_df = st.file_uploader(":red[***Supply***]")
-        uploaded_prd_df = uploaded_prd_df.sort_values('id')
+        uploaded_file = st.file_uploader(":red[***Supply***]")
+        uploaded_prd_df = pd.read_excel('uploaded_file').sort_values('id')
         uploaded_prd_df.insert(loc=2,column='Identifier',value= ['Manual_PRD_' + str(_ + 1) for _ in range(len(uploaded_prd_df))])
         st.write(uploaded_prd_df.head(5))
     else:
         st.write("Please upload your demand file.")
-        upload_dmd_df = st.file_uploader(":red[***Demand***]")  
-        uploaded_dmd_df = uploaded_dmd_df.sort_values('id')
+        uploaded_file = st.file_uploader(":red[***Demand***]")  
+        uploaded_dmd_df = pd.read_excel('uploaded_file').sort_values('id')
         uploaded_dmd_df.insert(loc=2,column='Identifier',value= ['Manual_DMD_' + str(_ + 1) for _ in range(len(uploaded_dmd_df))])
         st.write(uploaded_dmd_df.head(5))
         
