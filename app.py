@@ -286,16 +286,12 @@ if button_id:
                 styled_df = df.style.apply(gradient_color, subset=['Values'], axis=1)
                 st.write(styled_df.to_html(escape=False, index=True),unsafe_allow_html=True)
             else:
-                df = pd.DataFrame(columns=['PRD', 'ID', 'Values'])
+                rows = []
                 for index, row in most_similar_dmd_for_prd_df.iterrows():
                     dict_values = row['total']
                     for key, value in dict_values.items():
-                        df = df.append({
-                            'PRD': row['prd'],
-                            'ID': key,
-                            'Values': value
-                        }, ignore_index=True)
-                
+                        rows.append({'PRD': row['prd'], 'ID': key, 'Values': value})
+                result_df = pd.DataFrame(rows)
                 df['Values'] = df['Values'].round(2)
                 
                 st.write("### Before any thing",most_similar_dmd_for_prd_df)
