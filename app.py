@@ -286,10 +286,18 @@ if button_id:
                 styled_df = df.style.apply(gradient_color, subset=['Values'], axis=1)
                 st.write(styled_df.to_html(escape=False, index=True),unsafe_allow_html=True)
             else:
-                df = pd.DataFrame(most_similar_dmd_for_prd_df['total'].tolist()[0].items(), columns=['ID', 'Values'])
-                df['PRD'] = np.repeat(most_similar_dmd_for_prd_df['prd'],most_similar_dmd_for_prd_df['total'].apply(lambda x: len(x)))
+                df = pd.DataFrame(columns=['PRD', 'ID', 'Values'])
+                for index, row in df.iterrows():
+                    dict_values = most_similar_dmd_for_prd_df['total']
+                    for key, value in dict_values.items():
+                        df = df.append({
+                            'PRD': most_similar_dmd_for_prd_df['prd_urlIdentifier'],
+                            'ID': key,
+                            'Values': value
+                        }, ignore_index=True)
+                
                 df['Values'] = df['Values'].round(2)
-
+                
                 st.write("### Before any thing",most_similar_dmd_for_prd_df)
                 # Debugging - Display the DataFrame before sorting and grouping
                 st.write("### Before Sorting and Grouping", df)
