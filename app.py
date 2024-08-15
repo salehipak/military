@@ -203,7 +203,7 @@ if button_id:
           tokenized_documents = (tokenized_dmd_df['tokenized_dmd_title'] + tokenized_dmd_df['tokenized_dmd_description'] + tokenized_dmd_df['tokenized_dmd_key_words']).tolist() + (tokenized_prd_df['tokenized_prd_title'] + tokenized_prd_df['tokenized_prd_description'] + tokenized_prd_df['tokenized_prd_key_words']).tolist() 
           dictionary = corpora.Dictionary(tokenized_documents)
           corpus = [dictionary.doc2bow(doc) for doc in tokenized_documents]
-          lda_model = models.LdaModel(corpus,random_state=1234, num_topics=4, id2word=dictionary, passes=10)
+          lda_model = models.LdaModel(corpus,random_state=1234, num_topics=4, id2word=dictionary, passes=5)
           topic_proportions = [lda_model[doc] for doc in corpus]
           
           topic_labels = {}
@@ -213,16 +213,35 @@ if button_id:
 
           document_labels = [max(topic_dist, key=lambda x: x[1])[0] for topic_dist in topic_proportions]
           labeled_documents = [topic_labels[label] for label in document_labels]
-          tokenized_dmd_df['lda_dmd'] = labeled_documents[:len(
-                tokenized_dmd_df)]
-            
-          df = tokenized_dmd_df[tokenized_dmd_df['lda_dmd'] == labeled_documents[-1]]
-          df = df[['dmd_urlIdentifier', 'dmd_title','dmd_key_words','lda_dmd']].rename(columns={'dmd_title': 'Title', 'dmd_key_words': 'keywords','dmd_urlIdentifier':'ID','lda_dmd':'Label'}).iloc[-item_number:, :].reset_index(drop = True)
-          df.index += 1
-          df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(
-          lambda r: f'<a href="https://techmart.ir/demand/view/{r}">Link</a>'))
-          st.write(df.to_html(escape=False, index=True),
-                 unsafe_allow_html=True)
+
+          if len(prd_df) ==1:
+              tokenized_dmd_df['lda_dmd'] = labeled_documents[:len(tokenized_dmd_df)]
+              df = tokenized_dmd_df[tokenized_dmd_df['lda_dmd'] == labeled_documents[-1]]
+              df = df[['dmd_urlIdentifier', 'dmd_title','dmd_key_words','lda_dmd']].rename(columns={'dmd_title': 'Title', 'dmd_key_words': 'keywords','dmd_urlIdentifier':'ID','lda_dmd':'Label'}).iloc[-item_number:, :].reset_index(drop = True)
+              df.index += 1
+              df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(
+              lambda r: f'<a href="https://techmart.ir/demand/view/{r}">Link</a>'))
+              st.write(df.to_html(escape=False, index=True),
+                     unsafe_allow_html=True)
+          else:
+              prd_df['prd_dmd'] = labeled_documents[len(tokenized_dmd_df):]
+              tokenized_dmd_df['lda_dmd'] = labeled_documents[:len(tokenized_dmd_df)]
+              tokenized_dmd_df = tokenized_dmd_df.groupby('lda_dmd').head(item_number).reset_index(drop = True)
+              df = pd.merge(prd_df,tokenized_dmd_df['dmd_urlIdentifier', 'dmd_title','dmd_key_words','lda_dmd']], how ='left',left_on='lda_prd',right_on='lda_dmd').drop('prd_dmd').rename(columns={'dmd_title': 'Title', 'dmd_key_words': 'keywords','dmd_urlIdentifier':'ID','lda_dmd':'Label'}).reset_index(drop = True)
+              df.index += 1
+              df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(lambda r: f'https://techmart.ir/demand/view/{r}'))
+              data = df
+              output = io.BytesIO()
+              writer = pd.ExcelWriter(output, engine="xlsxwriter")
+              data.to_excel(writer, index=False, sheet_name="sheet1")
+              writer.close()
+              data_bytes = output.getvalue()
+              st.download_button(label="Download Result"
+                                   ,mime='application/vnd.ms-excel'
+                                   , file_name='dmd_for_prd_result.xlsx'
+                                   ,data=data_bytes
+                                   )
+
         
         else:
             if algo == 'Cosine Similarity':
@@ -274,7 +293,7 @@ if button_id:
                 most_similar_dmd_for_prd_df['total'] = most_similar_dmd_for_prd_df.apply(lambda x: max_counters([Counter(dict(y)) for y in x.iloc[1:4]]), axis=1)  
                 # most_similar_dmd_for_prd_df['total'] = most_similar_dmd_for_prd_df.apply(lambda x: dict(sum(map(Counter, x.iloc[1:4].apply(lambda y: dict(y))), start=Counter())), axis=1)
               
-            if prd_df['prd_urlIdentifier'].nunique() == 1:
+            if len(prd_df) == 1:
                 df = pd.DataFrame(most_similar_dmd_for_prd_df['total'].tolist()[0].items(), columns=[
                           'ID', 'Values']).sort_values('Values', ascending=False).iloc[:item_number, :].reset_index(drop=True)
                 df.Values = df.Values.round(2)
@@ -319,7 +338,7 @@ if button_id:
           tokenized_documents = (tokenized_prd_df['tokenized_prd_title'] + tokenized_prd_df['tokenized_prd_description'] + tokenized_prd_df['tokenized_prd_key_words']).tolist() + (tokenized_dmd_df['tokenized_dmd_title'] + tokenized_dmd_df['tokenized_dmd_description'] + tokenized_dmd_df['tokenized_dmd_key_words']).tolist() 
           dictionary = corpora.Dictionary(tokenized_documents)
           corpus = [dictionary.doc2bow(doc) for doc in tokenized_documents]
-          lda_model = models.LdaModel(corpus,random_state=1234, num_topics=4, id2word=dictionary, passes=10)
+          lda_model = models.LdaModel(corpus,random_state=1234, num_topics=4, id2word=dictionary, passes=5)
           topic_proportions = [lda_model[doc] for doc in corpus]
           
           topic_labels = {}
@@ -391,7 +410,7 @@ if button_id:
                 # most_similar_prd_for_dmd_df['total'] = most_similar_prd_for_dmd_df.apply(lambda x: dict(sum(map(Counter, x.iloc[1:4].apply(lambda y: dict(y))), start=Counter())), axis=1)
                 most_similar_prd_for_dmd_df['total'] = most_similar_prd_for_dmd_df.apply(lambda x: max_counters([Counter(dict(y)) for y in x.iloc[1:4]]), axis=1)
 
-            if dmd_df['dmd_urlIdentifier'].nunique() == 1:
+            if len(dmd_df) == 1:
                 df = pd.DataFrame(most_similar_prd_for_dmd_df['total'].tolist()[0].items(), columns=[
                           'ID', 'Values']).sort_values('Values', ascending=False).iloc[:item_number, :].reset_index(drop=True)
                 df.Values = df.Values.round(2)
