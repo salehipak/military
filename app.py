@@ -227,7 +227,7 @@ if button_id:
               prd_df['prd_dmd'] = labeled_documents[len(tokenized_dmd_df):]
               tokenized_dmd_df['lda_dmd'] = labeled_documents[:len(tokenized_dmd_df)]
               tokenized_dmd_df = tokenized_dmd_df.groupby('lda_dmd').head(item_number).reset_index(drop = True)
-              df = pd.merge(prd_df,tokenized_dmd_df['dmd_urlIdentifier', 'dmd_title','dmd_key_words','lda_dmd']], how ='left',left_on='lda_prd',right_on='lda_dmd').drop('prd_dmd').rename(columns={'dmd_title': 'Title', 'dmd_key_words': 'keywords','dmd_urlIdentifier':'ID','lda_dmd':'Label'}).reset_index(drop = True)
+              df = pd.merge(prd_df,tokenized_dmd_df[['dmd_urlIdentifier', 'dmd_title','dmd_key_words','lda_dmd']], how ='left',left_on='lda_prd',right_on='lda_dmd').drop('prd_dmd').rename(columns={'dmd_title': 'Title', 'dmd_key_words': 'keywords','dmd_urlIdentifier':'ID','lda_dmd':'Label'}).reset_index(drop = True)
               df.index += 1
               df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(lambda r: f'https://techmart.ir/demand/view/{r}'))
               data = df
