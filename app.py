@@ -39,8 +39,9 @@ def gradient_color(val):
     return [f'background-color: {color}' for _ in val]
 # -------------------------------------------------------------------------------
 nmz = Normalizer()
-nltk.download("punkt")
-nltk.download("stopwords")
+nltk.download()
+# nltk.download("punkt")
+# nltk.download("stopwords")
 en_stops = set(stopwords.words("english"))
 # Import persian stops
 fa_stops = sorted(list(set([nmz.normalize(w) for w in codecs.open(
