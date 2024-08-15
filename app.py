@@ -290,35 +290,37 @@ if button_id:
                 df['PRD'] = most_similar_dmd_for_prd_df['prd']
                 df['Values'] = df['Values'].round(2)
                 
-                # Debugging - Check the DataFrame before grouping
-                str.write(print("Before Sorting and Grouping:", df.shape))
-                str.write(print(df.head()))
+                # Debugging - Display the DataFrame before sorting and grouping
+                st.write("### Before Sorting and Grouping", df)
                 
                 # Sort and group to get the top 10 values per PRD
                 df = df.sort_values('Values', ascending=False).groupby('PRD').head(10).reset_index(drop=True)
                 
-                # Debugging - Check the DataFrame after grouping
-                str.write(print("After Grouping:", df.shape))
-                str.write(print(df.head()))
+                # Debugging - Display the DataFrame after grouping
+                st.write("### After Grouping", df)
                 
                 # Merge with the tokenized_dmd_df DataFrame
                 df = pd.merge(df, tokenized_dmd_df[['dmd_urlIdentifier', 'dmd_title', 'dmd_key_words']],
                               left_on='ID', right_on='dmd_urlIdentifier').drop('dmd_urlIdentifier', axis=1).rename(columns={'dmd_title': 'Title', 'dmd_key_words': 'keywords'})
                 
-                # Debugging - Check after merging
-                str.write(print("After First Merge:", df.shape))
-                str.write(print(df.head()))
+                # Debugging - Display after merging with tokenized_dmd_df
+                st.write("### After First Merge", df)
                 
                 # Merge with prd_df DataFrame
                 df = pd.merge(prd_df, df, how='left', left_on='prd_urlIdentifier', right_on='PRD').drop('PRD', axis=1)
                 
-                # Final debugging
-                str.write(print("Final DataFrame:", df.shape))
-                str.write(print(df.head()))
+                # Debugging - Display the final DataFrame
+                st.write("### Final DataFrame", df)
                 
                 # Adding index and Link
                 df.index += 1
                 df['Link'] = np.where(df['ID'].str.contains('Manual'), '-', df['ID'].apply(lambda r: f'https://techmart.ir/demand/view/{r}'))
+                
+                # Display the final result in Streamlit
+                st.write("### Final Result", df)
+                
+                # Optionally, display the DataFrame as a table
+                st.table(df)
 
                 data = df
                 output = io.BytesIO()
