@@ -349,7 +349,7 @@ if button_id:
           document_labels = [max(topic_dist, key=lambda x: x[1])[0] for topic_dist in topic_proportions]
           labeled_documents = [topic_labels[label] for label in document_labels]
           
-            if len(dmd_df) ==1:
+          if len(dmd_df) ==1:
               tokenized_prd_df['Label'] = labeled_documents[:len(tokenized_prd_df)]
               df = tokenized_prd_df[tokenized_prd_df['Label'] == labeled_documents[-1]]
               df = df[['prd_urlIdentifier', 'prd_title','prd_key_words','Label']].rename(columns={'prd_title': 'Title', 'prd_key_words': 'keywords','prd_urlIdentifier':'ID'}).iloc[-item_number:, :].reset_index(drop = True)
