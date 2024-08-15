@@ -39,7 +39,7 @@ def gradient_color(val):
     return [f'background-color: {color}' for _ in val]
 # -------------------------------------------------------------------------------
 nmz = Normalizer()
-nltk.download()
+nltk.download("punkt_tab")
 # nltk.download("punkt")
 # nltk.download("stopwords")
 en_stops = set(stopwords.words("english"))
