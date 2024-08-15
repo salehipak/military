@@ -291,30 +291,30 @@ if button_id:
                 df['Values'] = df['Values'].round(2)
                 
                 # Debugging - Check the DataFrame before grouping
-                print("Before Sorting and Grouping:", df.shape)
-                print(df.head())
+                str.write(print("Before Sorting and Grouping:", df.shape))
+                str.write(print(df.head()))
                 
                 # Sort and group to get the top 10 values per PRD
                 df = df.sort_values('Values', ascending=False).groupby('PRD').head(10).reset_index(drop=True)
                 
                 # Debugging - Check the DataFrame after grouping
-                print("After Grouping:", df.shape)
-                print(df.head())
+                str.write((print("After Grouping:", df.shape))
+                str.write((print(df.head()))
                 
                 # Merge with the tokenized_dmd_df DataFrame
                 df = pd.merge(df, tokenized_dmd_df[['dmd_urlIdentifier', 'dmd_title', 'dmd_key_words']],
                               left_on='ID', right_on='dmd_urlIdentifier').drop('dmd_urlIdentifier', axis=1).rename(columns={'dmd_title': 'Title', 'dmd_key_words': 'keywords'})
                 
                 # Debugging - Check after merging
-                print("After First Merge:", df.shape)
-                print(df.head())
+                str.write(print("After First Merge:", df.shape))
+                str.write(print(df.head()))
                 
                 # Merge with prd_df DataFrame
                 df = pd.merge(prd_df, df, how='left', left_on='prd_urlIdentifier', right_on='PRD').drop('PRD', axis=1)
                 
                 # Final debugging
-                print("Final DataFrame:", df.shape)
-                print(df.head())
+                str.write(print("Final DataFrame:", df.shape))
+                str.write(print(df.head()))
                 
                 # Adding index and Link
                 df.index += 1
