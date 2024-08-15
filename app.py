@@ -291,7 +291,7 @@ if button_id:
                     dict_values = row['total']
                     for key, value in dict_values.items():
                         rows.append({'PRD': row['prd'], 'ID': key, 'Values': value})
-                result_df = pd.DataFrame(rows)
+                df = pd.DataFrame(rows)
                 df['Values'] = df['Values'].round(2)
                 
                 st.write("### Before any thing",most_similar_dmd_for_prd_df)
