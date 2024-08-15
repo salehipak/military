@@ -410,11 +410,11 @@ if button_id:
                         rows.append({'DMD': row['dmd'], 'ID': key, 'Values': value})
                 df = pd.DataFrame(rows)
                 df['Values'] = df['Values'].round(2)
-                df = df.sort_values('Values', ascending=False).groupby('dmd').head(item_number).reset_index(drop=True)
+                df = df.sort_values('Values', ascending=False).groupby('DMD').head(item_number).reset_index(drop=True)
                 df = pd.merge(df, tokenized_prd_df[['prd_urlIdentifier', 'prd_title', 'prd_key_words']],
                               left_on='ID', right_on='prd_urlIdentifier').drop('prd_urlIdentifier', axis=1).rename(columns={'prd_title': 'Title', 'prd_key_words': 'keywords'})
         
-                df = pd.merge(dmd_df, df, how='left', left_on='dmd_urlIdentifier', right_on='dmd').drop('dmd', axis=1)
+                df = pd.merge(dmd_df, df, how='left', left_on='dmd_urlIdentifier', right_on='dmd').drop('DMD', axis=1)
                 df.index += 1
                 df['Link'] = np.where(df['ID'].str.contains('Manual'), '-', df['ID'].apply(lambda r: f'https://techmart.ir/demand/view/{r}'))
                 data = df
