@@ -294,7 +294,7 @@ if button_id:
                 df = pd.merge(df, tokenized_dmd_df[['dmd_urlIdentifier', 'dmd_title',
                                             'dmd_key_words']], left_on='ID', right_on='dmd_urlIdentifier').drop('dmd_urlIdentifier', axis=1).rename(columns={'dmd_title': 'Title', 'dmd_key_words': 'keywords'})
                 df.index += 1
-                df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(lambda r: f'<a href="https://techmart.ir/demand/view/{r}">Link</a>'))
+                df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(lambda r: f'https://techmart.ir/demand/view/{r}'))
                 data = df
                 output = io.BytesIO()
                 writer = pd.ExcelWriter(output, engine="xlsxwriter")
