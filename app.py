@@ -274,19 +274,38 @@ if button_id:
                 most_similar_dmd_for_prd_df['total'] = most_similar_dmd_for_prd_df.apply(lambda x: max_counters([Counter(dict(y)) for y in x.iloc[1:4]]), axis=1)  
                 # most_similar_dmd_for_prd_df['total'] = most_similar_dmd_for_prd_df.apply(lambda x: dict(sum(map(Counter, x.iloc[1:4].apply(lambda y: dict(y))), start=Counter())), axis=1)
               
-            df = pd.DataFrame(most_similar_dmd_for_prd_df['total'].tolist()[0].items(), columns=[
-                          'ID', 'Values'])
-            df['PRD'] =  most_similar_dmd_for_prd_df['prd']
-            df = df.sort_values('Values', ascending=False)
-            df.Values = df.Values.round(2)
-            df = df.groupby(['PRD']).head(item_number).reset_index(drop=True)
-            df = pd.merge(df, tokenized_dmd_df[['dmd_urlIdentifier', 'dmd_title',
+            if nunique(prd_df['prd_urlIdentifier']) == 1:
+                df = pd.DataFrame(most_similar_dmd_for_prd_df['total'].tolist()[0].items(), columns=[
+                          'ID', 'Values']).sort_values('Values', ascending=False).iloc[:item_number, :].reset_index(drop=True)
+                df.Values = df.Values.round(2)
+                df = pd.merge(df, tokenized_dmd_df[['dmd_urlIdentifier', 'dmd_title',
                                             'dmd_key_words']], left_on='ID', right_on='dmd_urlIdentifier').drop('dmd_urlIdentifier', axis=1).rename(columns={'dmd_title': 'Title', 'dmd_key_words': 'keywords'})
-            df.index += 1
-            df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(lambda r: f'<a href="https://techmart.ir/demand/view/{r}">Link</a>'))
-
-            styled_df = df.style.apply(gradient_color, subset=['Values'], axis=1)
-            st.write(styled_df.to_html(escape=False, index=True),unsafe_allow_html=True)
+                df.index += 1
+                df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(lambda r: f'<a href="https://techmart.ir/demand/view/{r}">Link</a>'))
+                
+                styled_df = df.style.apply(gradient_color, subset=['Values'], axis=1)
+                st.write(styled_df.to_html(escape=False, index=True),unsafe_allow_html=True)
+            else:
+                df = pd.DataFrame(most_similar_dmd_for_prd_df['total'].tolist()[0].items(), columns=[
+                          'ID', 'Values'])
+                df['PRD'] = most_similar_dmd_for_prd_df['prd']
+                df.Values = df.Values.round(2)
+                df = df.sort_values('Values', ascending=False).groupby('PRD').head(item_number).reset_index(drop=True)
+                df = pd.merge(df, tokenized_dmd_df[['dmd_urlIdentifier', 'dmd_title',
+                                            'dmd_key_words']], left_on='ID', right_on='dmd_urlIdentifier').drop('dmd_urlIdentifier', axis=1).rename(columns={'dmd_title': 'Title', 'dmd_key_words': 'keywords'})
+                df.index += 1
+                df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(lambda r: f'<a href="https://techmart.ir/demand/view/{r}">Link</a>'))
+                data = df
+                output = io.BytesIO()
+                writer = pd.ExcelWriter(output, engine="xlsxwriter")
+                data.to_excel(writer, index=False, sheet_name="sheet1")
+                writer.close()
+                data_bytes = output.getvalue()
+                st.download_button(label="Download Result"
+                                   ,mime='application/vnd.ms-excel'
+                                   , file_name='dmd_for_prd_result.xlsx'
+                                   ,data=data_bytes
+                                   )
 #----------------------------------
 # Demander
     if input_type == 'Demander':
