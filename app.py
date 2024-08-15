@@ -287,7 +287,7 @@ if button_id:
                 st.write(styled_df.to_html(escape=False, index=True),unsafe_allow_html=True)
             else:
                 df = pd.DataFrame(most_similar_dmd_for_prd_df['total'].tolist()[0].items(), columns=['ID', 'Values'])
-                df['PRD'] = most_similar_dmd_for_prd_df['prd'].tolist()[0].items()
+                df['PRD'] = most_similar_dmd_for_prd_df['prd']
                 df['Values'] = df['Values'].round(2)
 
                 st.write("### Before any thing",most_similar_dmd_for_prd_df)
