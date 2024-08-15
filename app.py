@@ -348,17 +348,35 @@ if button_id:
 
           document_labels = [max(topic_dist, key=lambda x: x[1])[0] for topic_dist in topic_proportions]
           labeled_documents = [topic_labels[label] for label in document_labels]
-          tokenized_prd_df['lda_prd'] = labeled_documents[:len(
-                tokenized_prd_df)]
-            
-          df = tokenized_prd_df[tokenized_prd_df['lda_prd'] == labeled_documents[-1]]
-          df = df[['prd_urlIdentifier', 'prd_title','prd_key_words','lda_prd']].rename(columns={'prd_title': 'Title', 'prd_key_words': 'keywords','prd_urlIdentifier':'ID','lda_prd':'Label'}).iloc[-item_number:, :].reset_index(drop = True)
-          df.index += 1
-          df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(
-          lambda r: f'<a href="https://techmart.ir/product/view/{r}">Link</a>'))
-          st.write(df.to_html(escape=False, index=True),
-                 unsafe_allow_html=True)
-        
+          
+            if len(dmd_df) ==1:
+              tokenized_prd_df['Label'] = labeled_documents[:len(tokenized_prd_df)]
+              df = tokenized_prd_df[tokenized_prd_df['Label'] == labeled_documents[-1]]
+              df = df[['prd_urlIdentifier', 'prd_title','prd_key_words','Label']].rename(columns={'prd_title': 'Title', 'prd_key_words': 'keywords','prd_urlIdentifier':'ID'}).iloc[-item_number:, :].reset_index(drop = True)
+              df.index += 1
+              df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(
+              lambda r: f'<a href="https://techmart.ir/demand/view/{r}">Link</a>'))
+              st.write(df.to_html(escape=False, index=True),
+                     unsafe_allow_html=True)
+          else:
+              dmd_df['Label'] = labeled_documents[len(tokenized_prd_df):]
+              tokenized_prd_df['Label'] = labeled_documents[:len(tokenized_prd_df)]
+              tokenized_prd_df = tokenized_prd_df.groupby('Label').head(item_number).reset_index(drop = True)
+              df = pd.merge(dmd_df,tokenized_prd_df[['prd_urlIdentifier', 'prd_title','prd_key_words','Label']], how ='left',on='Label').rename(columns={'prd_title': 'Title', 'prd_key_words': 'keywords','prd_urlIdentifier':'ID'}).reset_index(drop = True)
+              df.index += 1
+              df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(lambda r: f'https://techmart.ir/demand/view/{r}'))
+              data = df
+              output = io.BytesIO()
+              writer = pd.ExcelWriter(output, engine="xlsxwriter")
+              data.to_excel(writer, index=False, sheet_name="sheet1")
+              writer.close()
+              data_bytes = output.getvalue()
+              st.download_button(label="Download Result"
+                                   ,mime='application/vnd.ms-excel'
+                                   , file_name='prd_for_dmd_result.xlsx'
+                                   ,data=data_bytes
+                                   )
+
         else:
             if algo == 'Cosine Similarity':
                 most_similar_prd_for_dmd_df = pd.DataFrame({'dmd': dmd_df['dmd_urlIdentifier']})
