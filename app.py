@@ -275,8 +275,11 @@ if button_id:
                 # most_similar_dmd_for_prd_df['total'] = most_similar_dmd_for_prd_df.apply(lambda x: dict(sum(map(Counter, x.iloc[1:4].apply(lambda y: dict(y))), start=Counter())), axis=1)
               
             df = pd.DataFrame(most_similar_dmd_for_prd_df['total'].tolist()[0].items(), columns=[
-                          'ID', 'Values']).sort_values('Values', ascending=False).iloc[:item_number, :].reset_index(drop=True)
+                          'ID', 'Values'])
+            df['PRD'] =  most_similar_dmd_for_prd_df['prd']
+            df = df.sort_values('Values', ascending=False)
             df.Values = df.Values.round(2)
+            df = df.groupby(['PRD']).head(item_number).reset_index(drop=True)
             df = pd.merge(df, tokenized_dmd_df[['dmd_urlIdentifier', 'dmd_title',
                                             'dmd_key_words']], left_on='ID', right_on='dmd_urlIdentifier').drop('dmd_urlIdentifier', axis=1).rename(columns={'dmd_title': 'Title', 'dmd_key_words': 'keywords'})
             df.index += 1
