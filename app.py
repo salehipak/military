@@ -299,7 +299,7 @@ if button_id:
                 
                 # Debugging - Check the DataFrame after grouping
                 str.write((print("After Grouping:", df.shape))
-                str.write((print(df.head()))
+                str.write(print(df.head()))
                 
                 # Merge with the tokenized_dmd_df DataFrame
                 df = pd.merge(df, tokenized_dmd_df[['dmd_urlIdentifier', 'dmd_title', 'dmd_key_words']],
