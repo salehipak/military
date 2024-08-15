@@ -287,7 +287,7 @@ if button_id:
                 st.write(styled_df.to_html(escape=False, index=True),unsafe_allow_html=True)
             else:
                 df = pd.DataFrame(columns=['PRD', 'ID', 'Values'])
-                for index, row in df.iterrows():
+                for index, row in most_similar_dmd_for_prd_df.iterrows():
                     dict_values = row['total']
                     for key, value in dict_values.items():
                         df = df.append({
