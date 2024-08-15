@@ -291,7 +291,7 @@ if button_id:
                     dict_values = most_similar_dmd_for_prd_df['total']
                     for key, value in dict_values.items():
                         df = df.append({
-                            'PRD': most_similar_dmd_for_prd_df['prd_urlIdentifier'],
+                            'PRD': most_similar_dmd_for_prd_df['prd'],
                             'ID': key,
                             'Values': value
                         }, ignore_index=True)
