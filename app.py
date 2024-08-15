@@ -298,7 +298,7 @@ if button_id:
                 df = df.sort_values('Values', ascending=False).groupby('PRD').head(10).reset_index(drop=True)
                 
                 # Debugging - Check the DataFrame after grouping
-                str.write((print("After Grouping:", df.shape))
+                str.write(print("After Grouping:", df.shape))
                 str.write(print(df.head()))
                 
                 # Merge with the tokenized_dmd_df DataFrame
