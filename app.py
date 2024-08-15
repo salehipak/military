@@ -286,17 +286,40 @@ if button_id:
                 styled_df = df.style.apply(gradient_color, subset=['Values'], axis=1)
                 st.write(styled_df.to_html(escape=False, index=True),unsafe_allow_html=True)
             else:
-                df = pd.DataFrame(most_similar_dmd_for_prd_df['total'].tolist()[0].items(), columns=[
-                          'ID', 'Values'])
+                df = pd.DataFrame(most_similar_dmd_for_prd_df['total'].tolist()[0].items(), columns=['ID', 'Values'])
                 df['PRD'] = most_similar_dmd_for_prd_df['prd']
-                df.Values = df.Values.round(2)
+                df['Values'] = df['Values'].round(2)
                 
+                # Debugging - Check the DataFrame before grouping
+                print("Before Sorting and Grouping:", df.shape)
+                print(df.head())
+                
+                # Sort and group to get the top 10 values per PRD
                 df = df.sort_values('Values', ascending=False).groupby('PRD').head(10).reset_index(drop=True)
-                df = pd.merge(df, tokenized_dmd_df[['dmd_urlIdentifier', 'dmd_title',
-                                            'dmd_key_words']], left_on='ID', right_on='dmd_urlIdentifier').drop('dmd_urlIdentifier', axis=1).rename(columns={'dmd_title': 'Title', 'dmd_key_words': 'keywords'})
-                df = pd.merge(prd_df,df, how ='left', left_on = 'prd_urlIdentifier', right_on = 'PRD').drop('PRD', axis=1)
+                
+                # Debugging - Check the DataFrame after grouping
+                print("After Grouping:", df.shape)
+                print(df.head())
+                
+                # Merge with the tokenized_dmd_df DataFrame
+                df = pd.merge(df, tokenized_dmd_df[['dmd_urlIdentifier', 'dmd_title', 'dmd_key_words']],
+                              left_on='ID', right_on='dmd_urlIdentifier').drop('dmd_urlIdentifier', axis=1).rename(columns={'dmd_title': 'Title', 'dmd_key_words': 'keywords'})
+                
+                # Debugging - Check after merging
+                print("After First Merge:", df.shape)
+                print(df.head())
+                
+                # Merge with prd_df DataFrame
+                df = pd.merge(prd_df, df, how='left', left_on='prd_urlIdentifier', right_on='PRD').drop('PRD', axis=1)
+                
+                # Final debugging
+                print("Final DataFrame:", df.shape)
+                print(df.head())
+                
+                # Adding index and Link
                 df.index += 1
-                df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(lambda r: f'https://techmart.ir/demand/view/{r}'))
+                df['Link'] = np.where(df['ID'].str.contains('Manual'), '-', df['ID'].apply(lambda r: f'https://techmart.ir/demand/view/{r}'))
+
                 data = df
                 output = io.BytesIO()
                 writer = pd.ExcelWriter(output, engine="xlsxwriter")
@@ -308,7 +331,7 @@ if button_id:
                                    , file_name='dmd_for_prd_result.xlsx'
                                    ,data=data_bytes
                                    )
-#----------------------------------
+# --------------------------------------------------------------------------------
 # Demander
     if input_type == 'Demander':
         tokenized_prd_df = pd.read_csv('tokenized_prd_df.csv', converters={'tokenized_prd_title': ast.literal_eval, 'tokenized_prd_description': ast.literal_eval, 'tokenized_prd_key_words': ast.literal_eval})
