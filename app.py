@@ -215,9 +215,9 @@ if button_id:
           labeled_documents = [topic_labels[label] for label in document_labels]
 
           if len(prd_df) ==1:
-              tokenized_dmd_df['lda_dmd'] = labeled_documents[:len(tokenized_dmd_df)]
-              df = tokenized_dmd_df[tokenized_dmd_df['lda_dmd'] == labeled_documents[-1]]
-              df = df[['dmd_urlIdentifier', 'dmd_title','dmd_key_words','lda_dmd']].rename(columns={'dmd_title': 'Title', 'dmd_key_words': 'keywords','dmd_urlIdentifier':'ID','lda_dmd':'Label'}).iloc[-item_number:, :].reset_index(drop = True)
+              tokenized_dmd_df['Label'] = labeled_documents[:len(tokenized_dmd_df)]
+              df = tokenized_dmd_df[tokenized_dmd_df['Label'] == labeled_documents[-1]]
+              df = df[['dmd_urlIdentifier', 'dmd_title','dmd_key_words','Label']].rename(columns={'dmd_title': 'Title', 'dmd_key_words': 'keywords','dmd_urlIdentifier':'ID'}).iloc[-item_number:, :].reset_index(drop = True)
               df.index += 1
               df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(
               lambda r: f'<a href="https://techmart.ir/demand/view/{r}">Link</a>'))
@@ -227,7 +227,7 @@ if button_id:
               prd_df['Label'] = labeled_documents[len(tokenized_dmd_df):]
               tokenized_dmd_df['Label'] = labeled_documents[:len(tokenized_dmd_df)]
               tokenized_dmd_df = tokenized_dmd_df.groupby('Label').head(item_number).reset_index(drop = True)
-              df = pd.merge(prd_df,tokenized_dmd_df[['dmd_urlIdentifier', 'dmd_title','dmd_key_words','lda_dmd']], how ='left',on='Label').rename(columns={'dmd_title': 'Title', 'dmd_key_words': 'keywords','dmd_urlIdentifier':'ID'}).reset_index(drop = True)
+              df = pd.merge(prd_df,tokenized_dmd_df[['dmd_urlIdentifier', 'dmd_title','dmd_key_words','Label']], how ='left',on='Label').rename(columns={'dmd_title': 'Title', 'dmd_key_words': 'keywords','dmd_urlIdentifier':'ID'}).reset_index(drop = True)
               df.index += 1
               df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(lambda r: f'https://techmart.ir/demand/view/{r}'))
               data = df
