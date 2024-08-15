@@ -294,7 +294,7 @@ if button_id:
                 df = df.sort_values('Values', ascending=False).groupby('PRD').head(item_number).reset_index(drop=True)
                 df = pd.merge(df, tokenized_dmd_df[['dmd_urlIdentifier', 'dmd_title',
                                             'dmd_key_words']], left_on='ID', right_on='dmd_urlIdentifier').drop('dmd_urlIdentifier', axis=1).rename(columns={'dmd_title': 'Title', 'dmd_key_words': 'keywords'})
-                df = pd.merge(prd_df,df, how ='left', left_on = 'prd_urlIdentifier', right_on = 'PRD').drop('dmd_urlIdentifier', axis=1)
+                df = pd.merge(prd_df,df, how ='left', left_on = 'prd_urlIdentifier', right_on = 'PRD').drop('PRD', axis=1)
                 df.index += 1
                 df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(lambda r: f'https://techmart.ir/demand/view/{r}'))
                 data = df
