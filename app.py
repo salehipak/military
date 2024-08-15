@@ -390,16 +390,44 @@ if button_id:
         
                 # most_similar_prd_for_dmd_df['total'] = most_similar_prd_for_dmd_df.apply(lambda x: dict(sum(map(Counter, x.iloc[1:4].apply(lambda y: dict(y))), start=Counter())), axis=1)
                 most_similar_prd_for_dmd_df['total'] = most_similar_prd_for_dmd_df.apply(lambda x: max_counters([Counter(dict(y)) for y in x.iloc[1:4]]), axis=1)
-            df = pd.DataFrame(most_similar_prd_for_dmd_df['total'].tolist()[0].items(), columns=[
-                          'ID', 'Values']).sort_values('Values', ascending=False).iloc[:item_number, :].reset_index(drop=True)
-            df.Values = df.Values.round(2)
-            df = pd.merge(df, tokenized_prd_df[['prd_urlIdentifier', 'prd_title',
-                                            'prd_key_words']], left_on='ID', right_on='prd_urlIdentifier').drop('prd_urlIdentifier', axis=1).rename(columns={'prd_title': 'Title', 'prd_key_words': 'keywords'})
-            df.index += 1
-            df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(lambda r: f'<a href="https://techmart.ir/product/view/{r}">Link</a>'))
 
-            styled_df = df.style.apply(gradient_color, subset=['Values'], axis=1)
-            st.write(styled_df.to_html(escape=False, index=True),unsafe_allow_html=True)
+            if dmd_df['dmd_urlIdentifier'].nunique() == 1:
+                df = pd.DataFrame(most_similar_prd_for_dmd_df['total'].tolist()[0].items(), columns=[
+                          'ID', 'Values']).sort_values('Values', ascending=False).iloc[:item_number, :].reset_index(drop=True)
+                df.Values = df.Values.round(2)
+                df = pd.merge(df, tokenized_prd_df[['prd_urlIdentifier', 'prd_title',
+                                            'prd_key_words']], left_on='ID', right_on='prd_urlIdentifier').drop('prd_urlIdentifier', axis=1).rename(columns={'prd_title': 'Title', 'prd_key_words': 'keywords'})
+                df.index += 1
+                df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(lambda r: f'<a href="https://techmart.ir/demand/view/{r}">Link</a>'))
+                
+                styled_df = df.style.apply(gradient_color, subset=['Values'], axis=1)
+                st.write(styled_df.to_html(escape=False, index=True),unsafe_allow_html=True)
+            else:
+                rows = []
+                for index, row in most_similar_prd_for_dmd_df.iterrows():
+                    dict_values = row['total']
+                    for key, value in dict_values.items():
+                        rows.append({'DMD': row['dmd'], 'ID': key, 'Values': value})
+                df = pd.DataFrame(rows)
+                df['Values'] = df['Values'].round(2)
+                df = df.sort_values('Values', ascending=False).groupby('dmd').head(item_number).reset_index(drop=True)
+                df = pd.merge(df, tokenized_prd_df[['prd_urlIdentifier', 'prd_title', 'prd_key_words']],
+                              left_on='ID', right_on='prd_urlIdentifier').drop('prd_urlIdentifier', axis=1).rename(columns={'prd_title': 'Title', 'prd_key_words': 'keywords'})
+        
+                df = pd.merge(dmd_df, df, how='left', left_on='dmd_urlIdentifier', right_on='dmd').drop('dmd', axis=1)
+                df.index += 1
+                df['Link'] = np.where(df['ID'].str.contains('Manual'), '-', df['ID'].apply(lambda r: f'https://techmart.ir/demand/view/{r}'))
+                data = df
+                output = io.BytesIO()
+                writer = pd.ExcelWriter(output, engine="xlsxwriter")
+                data.to_excel(writer, index=False, sheet_name="sheet1")
+                writer.close()
+                data_bytes = output.getvalue()
+                st.download_button(label="Download Result"
+                                   ,mime='application/vnd.ms-excel'
+                                   , file_name='prd_for_dmd_result.xlsx'
+                                   ,data=data_bytes
+                                   )
 
     # ------------------------------------------------------------------------------------------
 
