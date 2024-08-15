@@ -288,10 +288,10 @@ if button_id:
             else:
                 df = pd.DataFrame(columns=['PRD', 'ID', 'Values'])
                 for index, row in df.iterrows():
-                    dict_values = most_similar_dmd_for_prd_df['total']
+                    dict_values = row['total']
                     for key, value in dict_values.items():
                         df = df.append({
-                            'PRD': most_similar_dmd_for_prd_df['prd'],
+                            'PRD': row['prd'],
                             'ID': key,
                             'Values': value
                         }, ignore_index=True)
