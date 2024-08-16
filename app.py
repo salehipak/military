@@ -46,9 +46,11 @@ en_stops = set(stopwords.words("english"))
 # Import persian stops
 fa_stops = sorted(list(set([nmz.normalize(w) for w in codecs.open(
     'persian.txt', encoding='utf-8').read().split('\n') if w])))
+tech_stops = sorted(list(set([nmz.normalize(w) for w in codecs.open(
+    'technical_stop.txt', encoding='utf-8').read().split('\n') if w])))
 
-specific_stops = ['جمله', 'سیستم', 'تولید', 'دستگاه', 'طراحی', 'شرکت', 'ساخت', 'مخصوص',
-                  'مصرف', 'کشور', 'خروجی', 'کیفیت', 'کاربرد', 'ارائه', 'کار', 'موجود', 'قطعات','قطعه','تجهیزات','کمک','تامین','سال','صنایع']
+# specific_stops = ['جمله', 'سیستم', 'تولید', 'دستگاه', 'طراحی', 'شرکت', 'ساخت', 'مخصوص',
+#                   'مصرف', 'کشور', 'خروجی', 'کیفیت', 'کاربرد', 'ارائه', 'کار', 'موجود', 'قطعات','قطعه','تجهیزات','کمک','تامین','سال','صنایع']
 
 
 def tokenize(df, columns):
@@ -64,7 +66,7 @@ def tokenize(df, columns):
             for w in t:
                 tokens = nltk.word_tokenize(w)
                 filtered_words = [word for word in tokens if (word not in fa_stops) & (
-                    word not in en_stops) & (word not in specific_stops) & (not word.isdigit())]
+                    word not in en_stops) & (word not in tech_stops) & (not word.isdigit())]
                 tokenized_dataset.append(filtered_words)
             df['tokenized_' + str(c)][i] = tokenized_dataset[0]
     return df
