@@ -66,7 +66,7 @@ def tokenize(df, columns):
             for w in t:
                 tokens = nltk.word_tokenize(w)
                 filtered_words = [word for word in tokens if (word not in fa_stops) & (
-                    word not in en_stops) & (word not in tech_stops) & (not word.isdigit())]
+                    word.lower() not in en_stops) & (word not in tech_stops) & (not word.isdigit())]
                 tokenized_dataset.append(filtered_words)
             df['tokenized_' + str(c)][i] = tokenized_dataset[0]
     return df
