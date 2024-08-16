@@ -39,40 +39,47 @@ def gradient_color(val):
     return [f'background-color: {color}' for _ in val]
 # -------------------------------------------------------------------------------
 nmz = Normalizer()
+stemmer = Stemmer()
+lemmatizer = Lemmatizer()
+tagger = POSTagger(model='pos_tagger.model')
+
 nltk.download("punkt_tab")
-# nltk.download("punkt")
-# nltk.download("stopwords")
 en_stops = set(stopwords.words("english"))
-# Import persian stops
 fa_stops = sorted(list(set([nmz.normalize(w) for w in codecs.open(
     'persian.txt', encoding='utf-8').read().split('\n') if w])))
 tech_stops = sorted(list(set([nmz.normalize(w) for w in codecs.open(
     'technical_stop.txt', encoding='utf-8').read().split('\n') if w])))
 
-# specific_stops = ['جمله', 'سیستم', 'تولید', 'دستگاه', 'طراحی', 'شرکت', 'ساخت', 'مخصوص',
-#                   'مصرف', 'کشور', 'خروجی', 'کیفیت', 'کاربرد', 'ارائه', 'کار', 'موجود', 'قطعات','قطعه','تجهیزات','کمک','تامین','سال','صنایع']
-
-
 def tokenize(df, columns):
     for c in columns:
-        df = df.drop('tokenized_' + str(c), axis=1, errors='ignore')
+        df = df.drop('tokenized_' + str(c), axis=1, errors='ignore')        
         df.insert(loc=df.shape[1], column='tokenized_' + str(c), value=None)
-        # Tokenize the Farsi dataset
+        # Process each row in the specified column
         for i in range(df.shape[0]):
             tokenized_dataset = []
-            # replace punctuation with space
-            t = re.sub(r'[^\w\s]', ' ', str(df[c][i]))
-            t = [nmz.normalize(t)]
-            for w in t:
-                tokens = nltk.word_tokenize(w)
-                filtered_words = [word for word in tokens if (word not in fa_stops) & (
-                    word.lower() not in en_stops) & (word not in tech_stops) & (not word.isdigit())]
-                tokenized_dataset.append(filtered_words)
-            df['tokenized_' + str(c)][i] = tokenized_dataset[0]
+            # Replace punctuation with space
+            text = re.sub(r'[^\w\s]', ' ', str(df[c][i]))
+            # Step 1: Normalize the text
+            normalized_text = nmz.normalize(text)
+            # Step 2: Tokenize the normalized text
+            tokens = nltk.word_tokenize(normalized_text)
+            # Step 3: POS tagging
+            tagged_tokens = tagger.tag(tokens)
+            # Step 4: Stem, lemmatize, and keep only nouns (tagged as 'NOUN','NOUN,EZ')
+            filtered_words = [
+                lemmatizer.lemmatize(stemmer.stem(word)) 
+                for word, pos in tagged_tokens 
+                if pos in (['NOUN','NOUN,EZ']) 
+                and word not in fa_stops 
+                and word.lower() not in en_stops 
+                and word not in tech_stops 
+                and not word.isdigit()
+            ]            
+            # Append the filtered words to the tokenized dataset
+            tokenized_dataset.append(filtered_words)
+            # Save the tokenized dataset to the new column
+            df.at[i, 'tokenized_' + str(c)] = tokenized_dataset[0]
     return df
-
-dmd_url = 'https://raw.githubusercontent.com/salehipak/military/main/tokenized_dmd_df.csv'
-prd_url = 'https://raw.githubusercontent.com/salehipak/military/main/tokenized_prd_df.csv'
 # -------------------------------------------------------------------------------
 # title and subtitle
 st.title('Technomart Matching Demo')
