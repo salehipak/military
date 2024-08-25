@@ -43,7 +43,7 @@ stemmer = Stemmer()
 lemmatizer = Lemmatizer()
 tagger = POSTagger(model='pos_tagger.model')
 
-nltk.download("punkt_tab")
+nltk.download()
 en_stops = set(stopwords.words("english"))
 fa_stops = sorted(list(set([nmz.normalize(w) for w in codecs.open(
     'persian.txt', encoding='utf-8').read().split('\n') if w])))
