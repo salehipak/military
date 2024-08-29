@@ -97,8 +97,8 @@ input_file = st.radio(
     options=["Yes", "No"]
     , index=1
 )
-dmd_sample_data = pd.ExcelFile('dmd_sample.xlsx')
-prd_sample_data = pd.ExcelFile('prd_sample.xlsx')
+dmd_sample_data = pd.read_excel('dmd_sample.xlsx')
+prd_sample_data = pd.read_excel('prd_sample.xlsx')
 # dmd_sample_data = pd.DataFrame({
 #             'dmd_id':[1]
 #             , 'dmd_title':['دستگاه تولید بویه های صیادی']
