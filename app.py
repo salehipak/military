@@ -97,8 +97,8 @@ input_file = st.radio(
     options=["Yes", "No"]
     , index=1
 )
-dmd_sample_data = pd.DataFrame(pd.read_excel(dmd_sample_data.xlsx)).sort_values('dmd_id')
-prd_sample_data = pd.DataFrame(pd.read_excel(prd_sample_data.xlsx)).sort_values('prd_id')
+dmd_sample_data = pd.DataFrame(pd.read_excel('dmd_sample_data.xlsx')).sort_values('dmd_id')
+prd_sample_data = pd.DataFrame(pd.read_excel('prd_sample_data.xlsx')).sort_values('prd_id')
 # dmd_sample_data = pd.DataFrame({
 #             'dmd_id':[1]
 #             , 'dmd_title':['دستگاه تولید بویه های صیادی']
