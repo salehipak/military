@@ -97,18 +97,20 @@ input_file = st.radio(
     options=["Yes", "No"]
     , index=1
 )
-dmd_sample_data = pd.DataFrame({
-            'dmd_id':[1]
-            , 'dmd_title':['دستگاه تولید بویه های صیادی']
-            ,'dmd_description':['بویه های صیادی یکی از ملزومات مهم صنعت صید کشور می باشد که...']
-            ,'dmd_key_words':[['ماهیگیری','صیادی']]
-        })
-prd_sample_data = pd.DataFrame({
-            'prd_id':[1]
-            , 'prd_title':['دستگاه تولید بویه های صیادی']
-            ,'prd_description':['بویه های صیادی یکی از ملزومات مهم صنعت صید کشور می باشد که...']
-            ,'prd_key_words':[['ماهیگیری','صیادی']]
-        })
+dmd_sample_data = pd.DataFrame(pd.read_excel(dmd_sample_data.xlsx)).sort_values('dmd_id')
+prd_sample_data = pd.DataFrame(pd.read_excel(prd_sample_data.xlsx)).sort_values('prd_id')
+# dmd_sample_data = pd.DataFrame({
+#             'dmd_id':[1]
+#             , 'dmd_title':['دستگاه تولید بویه های صیادی']
+#             ,'dmd_description':['بویه های صیادی یکی از ملزومات مهم صنعت صید کشور می باشد که...']
+#             ,'dmd_key_words':[['ماهیگیری','صیادی']]
+#         })
+# prd_sample_data = pd.DataFrame({
+#             'prd_id':[1]
+#             , 'prd_title':['دستگاه تولید بویه های صیادی']
+#             ,'prd_description':['بویه های صیادی یکی از ملزومات مهم صنعت صید کشور می باشد که...']
+#             ,'prd_key_words':[['ماهیگیری','صیادی']]
+#         })
 if input_file == 'Yes':
     st.write("Please download sample file below. Your file should have :red[***.xlsx***] format with the same columns.")
     if input_type == 'Supplier':
