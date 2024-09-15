@@ -215,7 +215,7 @@ if button_id:
           tokenized_documents = (tokenized_dmd_df['tokenized_dmd_title'] + tokenized_dmd_df['tokenized_dmd_description'] + tokenized_dmd_df['tokenized_dmd_key_words']).tolist() + (tokenized_prd_df['tokenized_prd_title'] + tokenized_prd_df['tokenized_prd_description'] + tokenized_prd_df['tokenized_prd_key_words']).tolist() 
           dictionary = corpora.Dictionary(tokenized_documents)
           corpus = [dictionary.doc2bow(doc) for doc in tokenized_documents]
-          lda_model = models.LdaModel(corpus,random_state=1234, num_topics=6, id2word=dictionary, passes=5)
+          lda_model = models.LdaModel(corpus,random_state=1234, num_topics=5, id2word=dictionary, passes=5)
           topic_proportions = [lda_model[doc] for doc in corpus]
           
           topic_labels = {}
@@ -350,7 +350,7 @@ if button_id:
           tokenized_documents = (tokenized_prd_df['tokenized_prd_title'] + tokenized_prd_df['tokenized_prd_description'] + tokenized_prd_df['tokenized_prd_key_words']).tolist() + (tokenized_dmd_df['tokenized_dmd_title'] + tokenized_dmd_df['tokenized_dmd_description'] + tokenized_dmd_df['tokenized_dmd_key_words']).tolist() 
           dictionary = corpora.Dictionary(tokenized_documents)
           corpus = [dictionary.doc2bow(doc) for doc in tokenized_documents]
-          lda_model = models.LdaModel(corpus,random_state=1234, num_topics=6, id2word=dictionary, passes=5)
+          lda_model = models.LdaModel(corpus,random_state=1234, num_topics=5, id2word=dictionary, passes=5)
           topic_proportions = [lda_model[doc] for doc in corpus]
           
           topic_labels = {}
