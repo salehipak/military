@@ -376,7 +376,7 @@ if button_id:
               tokenized_prd_df = tokenized_prd_df.groupby('Label').head(item_number).reset_index(drop = True)
               df = pd.merge(dmd_df,tokenized_prd_df[['prd_urlIdentifier', 'prd_title','prd_key_words','Label']], how ='left',on='Label').rename(columns={'prd_title': 'Title', 'prd_key_words': 'keywords','prd_urlIdentifier':'ID'}).reset_index(drop = True)
               df.index += 1
-              df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(lambda r: f'https://techmart.ir/demand/view/{r}'))
+              df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(lambda r: f'https://techmart.ir/product/view/{r}'))
               data = df
               output = io.BytesIO()
               writer = pd.ExcelWriter(output, engine="xlsxwriter")
@@ -447,7 +447,7 @@ if button_id:
                 df = pd.merge(df, tokenized_prd_df[['prd_urlIdentifier', 'prd_title',
                                             'prd_key_words']], left_on='ID', right_on='prd_urlIdentifier').drop('prd_urlIdentifier', axis=1).rename(columns={'prd_title': 'Title', 'prd_key_words': 'keywords'})
                 df.index += 1
-                df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(lambda r: f'<a href="https://techmart.ir/demand/view/{r}">Link</a>'))
+                df['Link'] = np.where(df['ID'].str.contains('Manual'),'-',df['ID'].apply(lambda r: f'<a href="https://techmart.ir/product/view/{r}">Link</a>'))
                 
                 styled_df = df.style.apply(gradient_color, subset=['Values'], axis=1)
                 st.write(styled_df.to_html(escape=False, index=True),unsafe_allow_html=True)
@@ -465,7 +465,7 @@ if button_id:
         
                 df = pd.merge(dmd_df, df, how='left', left_on='dmd_urlIdentifier', right_on='DMD').drop('DMD', axis=1)
                 df.index += 1
-                df['Link'] = np.where(df['ID'].str.contains('Manual'), '-', df['ID'].apply(lambda r: f'https://techmart.ir/demand/view/{r}'))
+                df['Link'] = np.where(df['ID'].str.contains('Manual'), '-', df['ID'].apply(lambda r: f'https://techmart.ir/product/view/{r}'))
                 data = df
                 output = io.BytesIO()
                 writer = pd.ExcelWriter(output, engine="xlsxwriter")
